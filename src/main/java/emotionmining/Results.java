@@ -115,6 +115,7 @@ public class Results {
 		Results result = Results.getInstance();
 		Corpus corpus = new Corpus();
 		corpus.setFileName("data/dev.csv");
+		corpus.setPredictedFileName("data/dev-predicted.csv");
 		List<Tweet> listTweetVO = result.getData(corpus);
 		ResultObjects evalAggDO = result.getConfusionMatrix(listTweetVO);
 

@@ -9,6 +9,14 @@ public class Corpus {
 	List<Tweet> listTweetVO;
 
 
+	public String getPredictedFileName() {
+		return predictedFileName;
+	}
+
+	public void setPredictedFileName(String predictedFileName) {
+		this.predictedFileName = predictedFileName;
+	}
+
 	public String getFileName() {
 		return fileName;
 	}
