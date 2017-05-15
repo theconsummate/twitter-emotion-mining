@@ -1,4 +1,4 @@
-package test;
+package emotionmining;
 
 import java.util.HashMap;
 import java.util.List;

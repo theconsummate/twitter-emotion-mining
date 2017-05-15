@@ -1,4 +1,4 @@
-package test;
+package emotionmining;
 
 //For Tokens: add normalizing
 public class Token {

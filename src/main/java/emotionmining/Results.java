@@ -1,4 +1,4 @@
-package test;
+package emotionmining;
 
 import java.util.List;
 import java.util.Map;
@@ -114,7 +114,7 @@ public class Results {
 
 		Results result = Results.getInstance();
 		Corpus corpus = new Corpus();
-		corpus.setFileName("dev.csv");
+		corpus.setFileName("data/dev.csv");
 		List<Tweet> listTweetVO = result.getData(corpus);
 		ResultObjects evalAggDO = result.getConfusionMatrix(listTweetVO);
 
