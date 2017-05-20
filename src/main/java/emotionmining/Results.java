@@ -82,10 +82,10 @@ public class Results {
 			// evalValue.getFn());
 			metric.setAllFN(metric.getAllFN() + evalValue.getFn());
 
-			// System.out.println("Recall for " + key + " : " +
-			// evalValue.getRecall());
-			// System.out.println("Precision for " + key + " : " +
-			// evalValue.getPrecision());
+			 System.out.println("Recall for " + key + " : " +
+			 evalValue.getRecall());
+			 System.out.println("Precision for " + key + " : " +
+			 evalValue.getPrecision());
 			System.out.println("FScore for " + key + " : " + evalValue.getFscore());
 			metric.setAllFScore(metric.getAllFScore() + evalValue.getFscore());
 		}

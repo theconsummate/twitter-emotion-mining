@@ -31,10 +31,10 @@ public class ReadData {
 					// tweet is empty
 					tweetDO.setTweet("");
 				} else{
-					System.out.println(elem[8]);
+//					System.out.println(elem[8]);
 					tweetDO.setTweet(elem[8]);
 				}
-				System.out.println(elem.length);
+//				System.out.println(elem.length);
 				tweetDO.setGoldLabel(elem[0]);
 				
 				
