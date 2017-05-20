@@ -1,11 +1,11 @@
 package emotionmining.naivebayes;
 
-import emotionmining.Model;
+import emotionmining.BaseClassifier;
 
 /**
  * Created by dhruv on 20/05/17.
  */
-public class NaiveBayes implements Model {
+public class NaiveBayes implements BaseClassifier {
     public void train() {
 
     }

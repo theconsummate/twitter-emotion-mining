@@ -1,4 +1,4 @@
-package emotionmining;
+package emotionmining.model;
 
 
 import java.util.Map;

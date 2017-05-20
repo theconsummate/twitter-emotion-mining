@@ -1,5 +1,8 @@
 package emotionmining;
 
+import emotionmining.model.Corpus;
+import emotionmining.model.Tweet;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package emotionmining;
+package emotionmining.model;
 
 
 /**

@@ -1,11 +1,11 @@
 package emotionmining.perceptron;
 
-import emotionmining.Model;
+import emotionmining.BaseClassifier;
 
 /**
  * Created by dhruv on 20/05/17.
  */
-public class MultiLabelPerceptron implements Model {
+public class MultiLabelPerceptron implements BaseClassifier {
     public void train() {
         
     }

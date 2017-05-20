@@ -1,5 +1,10 @@
 package emotionmining;
 
+import emotionmining.model.Corpus;
+import emotionmining.model.EvalObjects;
+import emotionmining.model.ResultObjects;
+import emotionmining.model.Tweet;
+
 import java.util.List;
 import java.util.Map;
 
