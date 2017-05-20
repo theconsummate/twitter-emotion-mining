@@ -57,19 +57,19 @@ For dev-predicted
 For evaluation task we calculated precision, recall, F-score at micro and macro level for all emotions. For micro level, we calculated precision, recall and F-score for each emotion individually.
 For instance micro precision of happy is calculated as **:**
 
-**Precision**  **­happy** ­=TP(happy)TP(happy)+FP(happy)
+**Precision**  **­happy** ­=**TP(happy)/TP(happy)+FP(happy)**
 
-**Recall**  **­happy** ­=TP(happy)TP(happy)+FN(happy)
+**Recall**  **­happy** ­=**TP(happy)/TP(happy)+FN(happy)**
 
-**­F-Score**  **­happy**  **­= 2** Precision(happy).Recall(happy)Precision(happy)+Recall(happy) ** **
+**­F-Score**  **­happy**  **­= **2 Precision(happy).Recall(happy)/Precision(happy)+Recall(happy)**
 
 At macro level we summed up all individual scores of micro level for each emotion and divided by total number of emotions that we considered.
 
-**Precision**** ­ (macro) **** =** Phappy+Psad++Panger+Psurprise+Pdisgust+Plove+Pfear+Ptrust8
+**Precision**** ­ (macro) **** =**(Phappy+Psad++Panger+Psurprise+Pdisgust+Plove+Pfear+Ptrust)/8**
 
-**Recall** **(macro)**  **­=** Rhappy+Rsad++Ranger+Rsurprise+Rdisgust+Rlove+Rfear+Rtrust8
+**Recall** **(macro)**  =**Rhappy+Rsad++Ranger+Rsurprise+Rdisgust+Rlove+Rfear+Rtrust/8**
 
-**F-Score** **­ (macro) =**  **­=**  **2** Precision(macro).Recall(macro)Precision(macro)+Recall(macro)
+**F-Score** **­ (macro) =**  **­ = 2* Precision(macro).Recall(macro)/Precision(macro)+Recall(macro)**
 
 **Feature extraction:**
 
@@ -78,4 +78,4 @@ Trimming vocabulary: removing stop words, symbols, hashtags, Retweets
 Stemming:  (Reduction of inflectional forms to base forms)
 
 Class definition according to em0tion categories
- (8 classes for emotion, 1 for no emotion and 1 for neutral)
+ (8 classes for emotion, 1 for no emotion and 1 for neutral) 
