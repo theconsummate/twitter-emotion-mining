@@ -1,24 +1,33 @@
 package emotionmining.model;
 
-//For Tokens: add normalizing
+/**
+* 
+* @author AysoltanGravina
+* 
+*         This class sets the each token of tweet as a string. It has the
+*         object method normalizeToken() which trims the white spaces at the
+*         begin and the end of the token and converts it into upper case.
+*
+*/
 public class Token {
 
-	// attribute
-	private String text;
+	// Attributes
+	private String token;
 
-	// constructor
-	public Token(String text) {
-		// add normalizing
-		this.text = text;
+	// Getter and Setter
+	public String getToken() {
+		return token;
 	}
-	
-	// getter
-	public String getText() {
-		return text;
+
+	// edit normalizing
+	public void setToken(String token) {
+		this.token = normalizeToken(token);
 	}
-	// setter
-	public void setText(String text) {
-		this.text = text;
+
+	// Object method for normalizing the Token
+	// add necessary normalizations
+	public String normalizeToken(String token) {
+		return token.trim().toUpperCase();
 	}
 
 }
