@@ -1,6 +1,7 @@
 package emotionmining.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public class Tweet {
 	private List<Token> tokensList; // necessary for later feature extraction
 	private String goldLabel;
 	private String predictedLabel;
-    private List<TweetFeatures> features;
+    private HashMap<String, Boolean> features;
 
 	// Getters and Setters
 	public String getTweet() {
@@ -54,11 +55,11 @@ public class Tweet {
 		this.predictedLabel = predictedLabel;
 	}
 
-    public List<TweetFeatures> getFeatures() {
+    public HashMap<String, Boolean> getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<TweetFeatures> features) {
+    public void setFeatures(HashMap<String, Boolean> features) {
         this.features = features;
     }
 
@@ -74,6 +75,4 @@ public class Tweet {
 			setTokensList(tokensList);
 		}
 	}
-
-
 }
