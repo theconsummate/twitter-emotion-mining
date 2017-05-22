@@ -19,6 +19,7 @@ public class Tweet {
 	private List<Token> tokensList; // necessary for later feature extraction
 	private String goldLabel;
 	private String predictedLabel;
+    private List<TweetFeatures> features;
 
 	// Getters and Setters
 	public String getTweet() {
@@ -53,6 +54,14 @@ public class Tweet {
 		this.predictedLabel = predictedLabel;
 	}
 
+    public List<TweetFeatures> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<TweetFeatures> features) {
+        this.features = features;
+    }
+
 	// Object method of Tweet: tokenizes the tweet into Token data type
 	// necessary for later feature extraction
 	public void getTokensList(String tweet) {
@@ -65,4 +74,6 @@ public class Tweet {
 			setTokensList(tokensList);
 		}
 	}
+
+
 }
