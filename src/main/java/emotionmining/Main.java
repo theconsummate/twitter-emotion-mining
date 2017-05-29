@@ -1,11 +1,11 @@
 package emotionmining;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import emotionmining.model.Corpus;
+import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
+import emotionmining.naivebayes.NaiveBayes;
 
 /**
  * 
@@ -65,6 +65,50 @@ public class Main {
 		System.out.println("********* Outputting the macro/micro accuracy for all labels *********");
 		System.out.println("Micro-Accuracy: " + eval.getAccuracy(allTp, allFn, allFp));
 		System.out.println("Macro-Accuracy: " + macroAccuracy / confusionMatrix.size());
+
+//		Naive Bayes Classifier.
+		Map<String, List<String>> trainingEx = new HashMap<String, List<String>>();
+		for(Tweet tweet: tweetsList){
+			List<String> tws = trainingEx.get(tweet.getGoldLabel());
+			if(tws == null){
+				tws = new ArrayList<String>();
+			}
+			tws.add(tweet.getTweet());
+			trainingEx.put(tweet.getGoldLabel(), tws);
+		}
+
+		Map<String, String[]> trainingExamples = new HashMap<String, String[]>();
+		for (Map.Entry<String, List<String>> entry : trainingEx.entrySet()) {
+			List<String> ss = entry.getValue();
+			String[] ss1 = new String[ss.size()];
+			ss1 = ss.toArray(ss1);
+			trainingExamples.put(entry.getKey(), ss1);
+		}
+
+		//train classifier
+		NaiveBayes nb = new NaiveBayes();
+		nb.train(trainingExamples);
+
+		//get trained classifier knowledgeBase
+		NaiveBayesKnowledgeBase knowledgeBase = nb.getKnowledgeBase();
+
+		nb = null;
+		trainingExamples = null;
+
+
+		//Use classifier
+		nb = new NaiveBayes(knowledgeBase);
+		String exampleEn = "I am sad";
+		String outputEn = nb.predict(exampleEn);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleEn, outputEn);
+
+		String exampleFr = "I am happy";
+		String outputFr = nb.predict(exampleFr);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleFr, outputFr);
+
+		String exampleDe = "I am in love";
+		String outputDe = nb.predict(exampleDe);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleDe, outputDe);
 	}
 
 }
