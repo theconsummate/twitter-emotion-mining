@@ -198,7 +198,7 @@ public class NaiveBayes {
      * @return
      * @throws IllegalArgumentException
      */
-    public String predict(String text) throws IllegalArgumentException {
+    public String test(String text) throws IllegalArgumentException {
         if (knowledgeBase == null) {
             throw new IllegalArgumentException("Knowledge Bases missing: Make sure you train first a classifier before you use it.");
         }
