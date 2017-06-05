@@ -188,6 +188,7 @@ public class Evaluator {
 	 * @param fp
 	 */
 	public double getPrecision(int tp, int fp) {
+        if(tp == 0 && fp == 0) return 0.0;
 		double precision = (double) tp / (tp + fp);
 		return precision;
 
