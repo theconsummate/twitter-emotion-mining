@@ -3,6 +3,7 @@ package emotionmining;
 import java.util.*;
 
 import emotionmining.model.Corpus;
+import emotionmining.model.Labels;
 import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
 import emotionmining.naivebayes.NaiveBayes;
@@ -30,7 +31,7 @@ public class Main {
 		evaluation(tweetsList);
 
 //		Naive Bayes Classifier.
-		naiveBayes(tweetsList);
+//		naiveBayes(tweetsList);
 
 //		perceptron invocation
 		perceptron(tweetsList);
@@ -90,42 +91,44 @@ public class Main {
 
 		// Get the TP, FN, FP values for each tweet.
 		Evaluator eval = new Evaluator();
-		Map<String, Evaluator> confusionMatrix = new HashMap<String, Evaluator>();
-		confusionMatrix.putAll(eval.getTP_FN_FP(tweets));
+		int[][] confusionMatrix = eval.computeConfusionMatrix(tweets);
 
 		// Variables for calculation of the micro and macro accuracy.
 		int allTp = 0;
 		int allFn = 0;
 		int allFp = 0;
+		int allTn = 0;
 		double macroAccuracy = 0.0;
 
 
 		// System.out.println(confusionMatrix.keySet());
 		// Outputting the evaluation for each label.
-		for (String key : confusionMatrix.keySet()) {
-			int tp = confusionMatrix.get(key).getTp();
+		for (Labels label : Labels.values()) {
+			int tp = eval.computeTP(confusionMatrix, label);
 			allTp = allTp + tp;
-			int fn = confusionMatrix.get(key).getFn();
+			int fn = eval.computeFN(confusionMatrix, label);
 			allFn = allFn + fn;
-			int fp = confusionMatrix.get(key).getFp();
+			int fp = eval.computeFP(confusionMatrix, label);
 			allFp = allFp + fp;
+			int tn = eval.computeTN(confusionMatrix, label);
+			allTn = allTn + tn;
 
-			double precision = confusionMatrix.get(key).getPrecision(tp, fp);
-			double recall = confusionMatrix.get(key).getRecall(tp, fn);
-			macroAccuracy = macroAccuracy + confusionMatrix.get(key).getAccuracy(tp, fn, fp);
+			double precision = eval.getPrecision(tp, fp);
+			double recall = eval.getRecall(tp, fn);
+			macroAccuracy = macroAccuracy + eval.getAccuracy(tp, fn, fp, tn);
 
-			System.out.println("********* Outputting the evaluation results for " + key.toUpperCase() + " *********");
-			System.out.println(key + "\t\t TP: " + tp + "\t FN: " + fn + "\t FP: " + fp);
+			System.out.println("********* Outputting the evaluation results for " + label.toString() + " *********");
+			System.out.println(label.toString() + "\t\t TP: " + tp + "\t FN: " + fn + "\t FP: " + fp);
 			System.out.println("\t\t Precision: " + precision);
 			System.out.println("\t\t Recall: " + recall);
-			System.out.println("\t\t FScore: " + confusionMatrix.get(key).getFScore(precision, recall));
+			System.out.println("\t\t FScore: " + eval.getFScore(precision, recall));
+			System.out.println("\t\t Accuracy: " + eval.getAccuracy(tp, fn, fp, tn));
 			System.out.println("\n");
 		}
 		// Outputting the accuracy for all labels.
-		// TNs were skipped in order to avoid the influence on calculation.
 		System.out.println("********* Outputting the macro/micro accuracy for all labels *********");
-		System.out.println("Micro-Accuracy: " + eval.getAccuracy(allTp, allFn, allFp));
-		System.out.println("Macro-Accuracy: " + macroAccuracy / confusionMatrix.size());
+		System.out.println("Micro-Accuracy: " + eval.getAccuracy(allTp, allFn, allFp, allTn));
+		System.out.println("Macro-Accuracy: " + macroAccuracy / Labels.getSize());
 	}
 
 }
