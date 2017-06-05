@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * 
- * @author AysoltanGravina
  * 
  *         This class define the data structure Tweet which contains tweet
  *         itself, gold and predicted labels. Additional there is the object
@@ -75,4 +74,5 @@ public class Tweet {
 			setTokensList(tokensList);
 		}
 	}
+	
 }

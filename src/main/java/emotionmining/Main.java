@@ -9,7 +9,7 @@ import emotionmining.model.Tweet;
 
 /**
  * 
- * @author AysoltanGravina
+ *
  * 
  *         This is the class with main method. It outputs the TP, FP, FN
  *         Precision, Recall and FScore for each label. And it outputs the macro
