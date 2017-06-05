@@ -1,11 +1,11 @@
 package emotionmining;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import emotionmining.model.Corpus;
+import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
+import emotionmining.naivebayes.NaiveBayes;
 
 /**
  * 
@@ -27,10 +27,71 @@ public class Main {
 		corpus.getEvaluationData();
 		List<Tweet> tweetsList = corpus.getTweetsList();
 
+		evaluation(tweetsList);
+
+//		Naive Bayes Classifier.
+		naiveBayes(tweetsList);
+
+//		perceptron invocation
+		perceptron(tweetsList);
+	}
+
+	public static void perceptron(List<Tweet> tweetsList){
+
+	}
+
+	public static void naiveBayes(List<Tweet> tweetsList){
+		Map<String, List<String>> trainingEx = new HashMap<String, List<String>>();
+		for(Tweet tweet: tweetsList){
+			List<String> tws = trainingEx.get(tweet.getGoldLabel());
+			if(tws == null){
+				tws = new ArrayList<String>();
+			}
+			tws.add(tweet.getTweet());
+			trainingEx.put(tweet.getGoldLabel(), tws);
+		}
+
+		Map<String, String[]> trainingExamples = new HashMap<String, String[]>();
+		for (Map.Entry<String, List<String>> entry : trainingEx.entrySet()) {
+			List<String> ss = entry.getValue();
+			String[] ss1 = new String[ss.size()];
+			ss1 = ss.toArray(ss1);
+			trainingExamples.put(entry.getKey(), ss1);
+		}
+
+		//train classifier
+		NaiveBayes nb = new NaiveBayes();
+		nb.train(trainingExamples);
+
+		//get trained classifier knowledgeBase
+		NaiveBayesKnowledgeBase knowledgeBase = nb.getKnowledgeBase();
+
+		nb = null;
+		trainingExamples = null;
+
+
+		//Use classifier
+		nb = new NaiveBayes(knowledgeBase);
+		String exampleEn = "I am sad";
+		String outputEn = nb.test(exampleEn);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleEn, outputEn);
+
+		String exampleFr = "I am happy";
+		String outputFr = nb.test(exampleFr);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleFr, outputFr);
+
+		String exampleDe = "I am in angry";
+		String outputDe = nb.test(exampleDe);
+		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleDe, outputDe);
+	}
+
+
+	public static void evaluation(List<Tweet> tweets){
+
 		// Get the TP, FN, FP values for each tweet.
 		Evaluator eval = new Evaluator();
 		Map<String, Evaluator> confusionMatrix = new HashMap<String, Evaluator>();
-		confusionMatrix.putAll(eval.getTP_FN_FP(tweetsList));
+		confusionMatrix.putAll(eval.getTP_FN_FP(tweets));
 
 		// Variables for calculation of the micro and macro accuracy.
 		int allTp = 0;
@@ -38,7 +99,7 @@ public class Main {
 		int allFp = 0;
 		double macroAccuracy = 0.0;
 
-		
+
 		// System.out.println(confusionMatrix.keySet());
 		// Outputting the evaluation for each label.
 		for (String key : confusionMatrix.keySet()) {
