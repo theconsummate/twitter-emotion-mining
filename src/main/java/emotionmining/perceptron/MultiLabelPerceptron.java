@@ -1,6 +1,5 @@
 package emotionmining.perceptron;
 
-import emotionmining.BaseClassifier;
 import emotionmining.BaseClassifierImplementation;
 
 /**

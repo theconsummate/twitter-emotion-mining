@@ -1,8 +1,8 @@
 package emotionmining.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -20,7 +20,10 @@ public class Tweet {
 	private List<Token> tokensList; // necessary for later feature extraction
 	private String goldLabel;
 	private String predictedLabel;
-    private HashMap<String, Boolean> features;
+
+	private String weightStr;
+	private Map<String, Double> features;
+	private Double maxScoreCategory = 0.0;
 
 	// Getters and Setters
 	public String getTweet() {
@@ -55,13 +58,29 @@ public class Tweet {
 		this.predictedLabel = predictedLabel;
 	}
 
-    public HashMap<String, Boolean> getFeatures() {
-        return features;
-    }
+	public String getWeightStr() {
+		return weightStr;
+	}
 
-    public void setFeatures(HashMap<String, Boolean> features) {
-        this.features = features;
-    }
+	public void setWeightStr(String weightStr) {
+		this.weightStr = weightStr;
+	}
+
+	public Map<String, Double> getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(Map<String, Double> features) {
+		this.features = features;
+	}
+
+	public Double getMaxScoreCategory() {
+		return maxScoreCategory;
+	}
+
+	public void setMaxScoreCategory(Double maxScoreCategory) {
+		this.maxScoreCategory = maxScoreCategory;
+	}
 
 	// Object method of Tweet: tokenizes the tweet into Token data type
 	// necessary for later feature extraction
