@@ -1,14 +1,13 @@
 package emotionmining.model;
 
-/**
- * Created by dhruv on 22/05/17.
- */
+
 public class TweetFeatures {
 //    TODO
-    public String[] getFeaturesList(){
+	    public String[] getFeaturesList(){
 //        This is the header row of our csv file.
         String[] s = {"hasAdjective", "hadWordX"};
         return s;
+        
 
     }
 //    TODO
