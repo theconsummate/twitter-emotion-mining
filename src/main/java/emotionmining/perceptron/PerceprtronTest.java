@@ -1,74 +1,75 @@
 package emotionmining.perceptron;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import emotionmining.model.FeatureTuple;
 import emotionmining.model.Tweet;
 
 
 public class PerceprtronTest {
 
-	public Map<String, Map<String, Double>> initializeWeightVecor() {
+	public static final int NUM_FEATURES = 10;
 
-		Map<String, Map<String, Double>> weightVector = new HashMap<String, Map<String, Double>>();
+	public Map<String, List<FeatureTuple>> initializeWeightVector() {
+
+		Map<String, List<FeatureTuple>> weightVector = new HashMap<String, List<FeatureTuple>>();
 		List<String> labels = Arrays.asList("anger", "disgust", "fear", "happy", "love", "sad", "surprise", "trust");
 		// Initialize weight vectors for each class with bias 0.1
 		for (String label : labels) {
-			Map<String, Double> classWeightVector = new HashMap<String, Double>();
-			classWeightVector.put("bias", 0.1);
-			weightVector.put(label, classWeightVector);
+			List<FeatureTuple> bias = new LinkedList<FeatureTuple>();
+			for(int i = 0; i < NUM_FEATURES; i++){
+				bias.add(new FeatureTuple(i, 0.1));
+			}
+			weightVector.put(label, bias);
 		}
 		return weightVector;
 	}
 
-	public Map<String, Map<String, Double>> trainModel(List<Tweet> tweetsList, int MAX_ITER) {
+	public Map<String, List<FeatureTuple>> trainModel(List<Tweet> tweetsList, int MAX_ITER) {
 
 		// Evaluator eval = new Evaluator();
-		Map<String, Double> tempWeights;
+        List<FeatureTuple> tempWeights;
 		List<Tweet> tweetsListEval;
 
 		System.out.println("********** Train The Model ***********");
 
-		Map<String, Map<String, Double>> weightVector = initializeWeightVecor();
+		Map<String, List<FeatureTuple>> weightVector = initializeWeightVector();
 
 		// ADD: MAX_ITER oder bis alle Instanzen richtig klassifiziert sind
 		// Number of epochs
 		for (int i = 0; i < MAX_ITER; i++) {
 
-			tweetsListEval = new ArrayList<Tweet>();
+//			tweetsListEval = new ArrayList<Tweet>();
 
 			// for each point = for each tweet instance or each line in the
 			// training data
 			for (Tweet tweetInstance : tweetsList) {
 				// Get the features for each instance (in form <FeatureName :
 				// FeatureValue>)
-				Map<String, Double> featureVector = tweetInstance.getFeatures();
+//                add 0.1 at index 0 for bias
+				List<FeatureTuple> featureVector = new LinkedList<FeatureTuple>();
+                featureVector.add(new FeatureTuple(0, 0.1));
+                featureVector.addAll(tweetInstance.getFeatures());
 				// Get the weights for each instance (in form <Label:
 				// <FeatureName : FeatureValue>>)
-				weightVector = getWeightVecors(featureVector.keySet(), weightVector);
-				featureVector = putBiasInFeatureVector(featureVector);
 				tweetInstance.setFeatures(featureVector);
 				tweetInstance = getWinningPerceptron(tweetInstance, weightVector);
 
 				if (tweetInstance.getMaxScoreCategory() == 0.0) {
-					tempWeights = getAdjustedWeight(weightVector.get(tweetInstance.getGoldLabel()), true,
-							featureVector);
+					tempWeights = vectorArtimetic(weightVector.get(tweetInstance.getGoldLabel()),
+							featureVector, true);
 					weightVector.put(tweetInstance.getGoldLabel(), tempWeights);
 					continue;
 				}
 				if (!(tweetInstance.getGoldLabel().equalsIgnoreCase(tweetInstance.getPredictedLabel()))) {
-					tempWeights = getAdjustedWeight(weightVector.get(tweetInstance.getGoldLabel()), true,
-							featureVector);
+					tempWeights = vectorArtimetic(weightVector.get(tweetInstance.getGoldLabel()),
+							featureVector, true);
 					weightVector.put(tweetInstance.getGoldLabel(), tempWeights);
-					tempWeights = getAdjustedWeight(weightVector.get(tweetInstance.getPredictedLabel()), false,
-							featureVector);
+					tempWeights = vectorArtimetic(weightVector.get(tweetInstance.getPredictedLabel()),
+							featureVector, false);
 					weightVector.put(tweetInstance.getPredictedLabel(), tempWeights);
 
 				}
-				tweetsListEval.add(tweetInstance);
+//				tweetsListEval.add(tweetInstance);
 
 			}
 			System.out.println("Number of epochs is: " + i);
@@ -76,44 +77,50 @@ public class PerceprtronTest {
 		return weightVector;
 	}
 
-	public Map<String, Map<String, Double>> getWeightVecors(Set<String> features,
-			Map<String, Map<String, Double>> weightMap) {
+	private double computeDotProductofTuples(List<FeatureTuple> v1, List<FeatureTuple> v2){
+		double product = 0.0;
+		Iterator v1_it = v1.iterator();
+		Iterator v2_it = v2.iterator();
+		// get the first element of both lists
+		FeatureTuple v11 = null, v22 = null;
+		if(v1_it.hasNext()){
+			v11 = (FeatureTuple) v1_it.next();
+		}
+		if(v2_it.hasNext()){
+			v22 = (FeatureTuple) v2_it.next();
+		}
+		if (v11 == null || v22 == null){
+//			one or both vector is only 0's
+			return 0.0;
+		}
+//		compute product at first item
+		if(v11.getIndex() == v22.getIndex()){
+			product += v11.getFeatureValue() * v22.getFeatureValue();
+		}
+		while (v1_it.hasNext() && v2_it.hasNext()) {
+//			move to next item in the list where we are at the lower index.
+			if(v11.getIndex() < v22.getIndex()){
+				v11 = (FeatureTuple) v1_it.next();
+			} else{
+				v22 = (FeatureTuple) v2_it.next();
+			}
 
-		// anger, disgust, fear, happy, love, sad, surprise, trust
-		List<String> classLabels = Arrays.asList("anger", "disgust", "fear", "happy", "love", "sad", "surprise",
-				"trust");
-
-		for (String label : classLabels) {
-			Map<String, Double> classWeightVector = weightMap.get(label);
-			for (String featureStr : features) {
-				if (classWeightVector.containsKey(featureStr)) {
-					continue;
-				} else {
-					classWeightVector.put(featureStr, 0.1);
-				}
-
+			if(v11.getIndex() == v22.getIndex()){
+				product += v11.getFeatureValue() * v22.getFeatureValue();
 			}
 		}
 
-		return weightMap;
+		return product;
 
 	}
 
-	// überarbeite. Füge lerning rate
-	public Map<String, Double> putBiasInFeatureVector(Map<String, Double> featureVector) {
-		featureVector.put("bias", 1.0);
-		return featureVector;
-
-	}
-
-	public Tweet getWinningPerceptron(Tweet tweetInstance, Map<String, Map<String, Double>> weightMap) {
+	public Tweet getWinningPerceptron(Tweet tweetInstance, Map<String, List<FeatureTuple>> weightMap) {
 
 		double argmax = 0.0;
 		String weighStr = "";
-		Map<String, Double> featureVector = tweetInstance.getFeatures();
 		for (String label : weightMap.keySet()) {
 			// System.out.println("Label ::: "+label);
-			double sum = sumFunktion(weightMap.get(label), featureVector);
+			double sum = computeDotProductofTuples(tweetInstance.getFeatures(), weightMap.get(label));
 			weighStr = weighStr + label + ":" + sum + ",";
 			if (sum > argmax) {
 				argmax = sum;
@@ -144,24 +151,67 @@ public class PerceprtronTest {
 
 	}
 
-	public Map<String, Double> getAdjustedWeight(Map<String, Double> weight, boolean action,
-			Map<String, Double> featureVector) {
+    private double addSubtract(double a, double b, boolean isSum){
+        if(isSum){
+            return a + b;
+        }
+        return a - b;
+    }
+
+    private List<FeatureTuple> vectorArtimetic(List<FeatureTuple> v1, List<FeatureTuple> v2, boolean isSum){
+        List<FeatureTuple> sum = new LinkedList<FeatureTuple>();
+        Iterator v1_it = v1.iterator();
+        Iterator v2_it = v2.iterator();
+        // get the first element of both lists
+        FeatureTuple v11 = null, v22 = null;
+        if(v1_it.hasNext()){
+            v11 = (FeatureTuple) v1_it.next();
+        }
+        if(v2_it.hasNext()){
+            v22 = (FeatureTuple) v2_it.next();
+        }
+        if (v11 == null || v22 == null){
+//			one or both vector is only 0's
+            return sum;
+        }
+//		compute product at first item
+        if(v11.getIndex() == v22.getIndex()){
+            sum.add(new FeatureTuple(v11.getIndex(), addSubtract(v11.getFeatureValue(), v22.getFeatureValue(), isSum)));
+        }
+        while (v1_it.hasNext() && v2_it.hasNext()) {
+//			move to next item in the list where we are at the lower index.
+            if(v11.getIndex() < v22.getIndex()){
+                sum.add(v11);
+                v11 = (FeatureTuple) v1_it.next();
+            } else{
+                sum.add(v22);
+                v22 = (FeatureTuple) v2_it.next();
+            }
+
+            if(v11.getIndex() == v22.getIndex()){
+                sum.add(new FeatureTuple(v11.getIndex(), addSubtract(v11.getFeatureValue(), v22.getFeatureValue(), isSum)));
+            }
+        }
+
+//        either of the list has ended. add the remainning items
+        while(v1_it.hasNext()){
+            sum.add((FeatureTuple) v1_it.next());
+        }
+        while(v2_it.hasNext()){
+            sum.add((FeatureTuple) v2_it.next());
+        }
+
+        return sum;
+    }
+
+	/*public Map<String, Double> getAdjustedWeight(List<FeatureTuple> weights, boolean action, List<FeatureTuple> featureVector) {
 
 		// Map<String, Double> adjWeightVector = new HashMap<String, Double>();
-		for (String feature : featureVector.keySet()) {
+        if (action) {
+            w = w + x;
+        } else {
+            w = w - x;
+        }
 
-			double w = weight.get(feature);
-			double x = featureVector.get(feature);
-			if (action) {
-				w = w + x;
-			} else {
-				w = w - x;
-			}
-			weight.put(feature, w);
-
-		}
-
-		return weight;
-
-	}
+	}*/
 }

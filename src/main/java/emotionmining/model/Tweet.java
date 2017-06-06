@@ -21,7 +21,11 @@ public class Tweet {
 	private String predictedLabel;
 
 	private String weightStr;
-	private Map<String, Double> features;
+	/*
+	* 0 index is bias, add all other features from index 1 onwards
+	* list is sorted by index
+	* */
+	private List<FeatureTuple> features;
 	private Double maxScoreCategory = 0.0;
 
 	// Getters and Setters
@@ -65,11 +69,11 @@ public class Tweet {
 		this.weightStr = weightStr;
 	}
 
-	public Map<String, Double> getFeatures() {
+	public List<FeatureTuple> getFeatures() {
 		return features;
 	}
 
-	public void setFeatures(Map<String, Double> features) {
+	public void setFeatures(List<FeatureTuple> features) {
 		this.features = features;
 	}
 
