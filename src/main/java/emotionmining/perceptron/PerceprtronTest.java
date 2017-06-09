@@ -1,12 +1,8 @@
 package emotionmining.perceptron;
-import java.util.*;
-
-import emotionmining.model.FeatureTuple;
-import emotionmining.model.Tweet;
-
 
 public class PerceprtronTest {
 
+	/*
 	public static final int NUM_FEATURES = 10;
 
 	public Map<String, List<FeatureTuple>> initializeWeightVector() {
@@ -204,7 +200,7 @@ public class PerceprtronTest {
         return sum;
     }
 
-	/*public Map<String, Double> getAdjustedWeight(List<FeatureTuple> weights, boolean action, List<FeatureTuple> featureVector) {
+	public Map<String, Double> getAdjustedWeight(List<FeatureTuple> weights, boolean action, List<FeatureTuple> featureVector) {
 
 		// Map<String, Double> adjWeightVector = new HashMap<String, Double>();
         if (action) {

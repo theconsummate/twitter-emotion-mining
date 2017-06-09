@@ -1,11 +1,11 @@
 package emotionmining.model;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 
+ * @author AysoltanGravina
  * 
  *         This class define the data structure Tweet which contains tweet
  *         itself, gold and predicted labels. Additional there is the object
@@ -20,13 +20,7 @@ public class Tweet {
 	private String goldLabel;
 	private String predictedLabel;
 
-	private String weightStr;
-	/*
-	* 0 index is bias, add all other features from index 1 onwards
-	* list is sorted by index
-	* */
-	private List<FeatureTuple> features;
-	private Double maxScoreCategory = 0.0;
+	private Map<String, Double> features;
 
 	// Getters and Setters
 	public String getTweet() {
@@ -61,28 +55,12 @@ public class Tweet {
 		this.predictedLabel = predictedLabel;
 	}
 
-	public String getWeightStr() {
-		return weightStr;
-	}
-
-	public void setWeightStr(String weightStr) {
-		this.weightStr = weightStr;
-	}
-
-	public List<FeatureTuple> getFeatures() {
+	public Map<String, Double> getFeatures() {
 		return features;
 	}
 
-	public void setFeatures(List<FeatureTuple> features) {
+	public void setFeatures(Map<String, Double> features) {
 		this.features = features;
-	}
-
-	public Double getMaxScoreCategory() {
-		return maxScoreCategory;
-	}
-
-	public void setMaxScoreCategory(Double maxScoreCategory) {
-		this.maxScoreCategory = maxScoreCategory;
 	}
 
 	// Object method of Tweet: tokenizes the tweet into Token data type
@@ -97,5 +75,4 @@ public class Tweet {
 			setTokensList(tokensList);
 		}
 	}
-	
 }
