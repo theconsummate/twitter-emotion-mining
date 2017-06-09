@@ -12,12 +12,8 @@ import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
 import emotionmining.naivebayes.NaiveBayes;
 import emotionmining.perceptron.MultiClassPerceptron;
-import emotionmining.perceptron.Perceptron;
 
 /**
- * 
- *
- * 
  *         This is the class with main method. It outputs the TP, FP, FN
  *         Precision, Recall and FScore for each label. And it outputs the macro
  *         and micro accuracy (for all labels).
@@ -34,19 +30,20 @@ public class Main {
 		corpus.getEvaluationData();
 		List<Tweet> tweetsList = corpus.getTweetsList();
 
-		evaluation(tweetsList);
+//		evaluation(tweetsList);
 
 //		Naive Bayes Classifier.
 //		naiveBayes(tweetsList);
 
 //		perceptron invocation
-		String modelfileName = "data/modelfileName.csv";
-        try {
-            perceptronTrain(tweetsList, modelfileName);
-            perceptronTest(tweetsList, modelfileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//		String modelfileName = "data/modelfileName.csv";
+//        try {
+//            perceptronTrain(tweetsList, modelfileName);
+//            perceptronTest(tweetsList, modelfileName);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        FeatureExtraction.posTaggingAndStemming(tweetsList);
     }
 
 

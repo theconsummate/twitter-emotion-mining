@@ -1,11 +1,15 @@
 package emotionmining;
 
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.trees.*;
 import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
+import emotionmining.model.Tweet;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.StringReader;
+import java.util.*;
 
 /**
  * Created by dhruv on 27/05/17.
@@ -62,5 +66,89 @@ public class FeatureExtraction {
         }
 
         return stats;
+    }
+
+
+    /**
+     * Performs POS Tagging and Stemming using the Stanford Lexical Parser.
+     * @param tweetsList
+     * @return
+     * */
+    public static void posTaggingAndStemming(List<Tweet> tweetsList) {
+
+        LexicalizedParser lp = LexicalizedParser.loadModel("data/englishPCFG.ser.gz"); // Create new parser
+        //lp.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"}); // set max sentence length if you want
+
+        // Call parser on files, and tokenize the contents
+        StringReader sr; // we need to re-read each line into its own reader because the tokenizer is over-complicated garbage
+        PTBTokenizer tkzr; // tokenizer object
+        WordStemmer ls = new WordStemmer(); // stemmer/lemmatizer object
+
+        // Read File Line By Line
+        String strLine;
+        for(Tweet tweet: tweetsList) {
+            System.out.println ("Tokenizing and Parsing: "+tweet.getTweet()); // print current line to console
+
+            // do all the standard java over-complication to use the stanford parser tokenizer
+            sr = new StringReader(tweet.getTweet());
+            tkzr = PTBTokenizer.newPTBTokenizer(sr);
+            List toks = tkzr.tokenize();
+            System.out.println ("tokens: "+toks);
+
+            Tree parse = (Tree) lp.apply(toks); // finally, we actually get to parse something
+
+            // Output Option 1: Printing out various data by accessing it programmatically
+
+            // Get words, stemmed words and POS tags
+            ArrayList<String> words = new ArrayList();
+            ArrayList<String> stems = new ArrayList();
+            ArrayList<String> tags = new ArrayList();
+
+            // Get words and Tags
+            for (TaggedWord tw : parse.taggedYield()){
+                words.add(tw.word());
+                tags.add(tw.tag());
+            }
+
+            // Get stems
+            ls.visitTree(parse); // apply the stemmer to the tree
+            for (TaggedWord tw : parse.taggedYield()){
+                stems.add(tw.word());
+            }
+
+            // Get dependency tree
+            TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+            GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+            GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
+            Collection tdl = gs.typedDependenciesCollapsed();
+
+            // And print!
+            System.out.println("words: "+words);
+            System.out.println("POStags: "+tags);
+            System.out.println("stemmedWordsAndTags: "+stems);
+            System.out.println("typedDependencies: "+tdl);
+
+            // Output Option 2: Printing out various data using TreePrint
+
+            // Various TreePrint options
+            //	    "penn", // constituency parse
+            //	    "oneline",
+            //	    rootLabelOnlyFormat,
+            //	    "words",
+            //	    "wordsAndTags", // unstemmed words and pos tags
+            //	    "dependencies", // unlabeled dependency parse
+            //	    "typedDependencies", // dependency parse
+            //	    "typedDependenciesCollapsed",
+            //	    "latexTree",
+            //	    "collocations",
+            //	    "semanticGraph"
+
+            // Print using TreePrint with various options
+            //TreePrint tp = new TreePrint("wordsAndTags,typedDependencies");
+            //tp.printTree(parse);
+
+            System.out.println(); // separate output lines
+        }
+
     }
 }
