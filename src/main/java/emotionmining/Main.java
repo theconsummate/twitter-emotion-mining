@@ -1,5 +1,9 @@
 package emotionmining;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import emotionmining.model.Corpus;
@@ -7,6 +11,8 @@ import emotionmining.model.Labels;
 import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
 import emotionmining.naivebayes.NaiveBayes;
+import emotionmining.perceptron.MultiClassPerceptron;
+import emotionmining.perceptron.Perceptron;
 
 /**
  * 
@@ -31,15 +37,18 @@ public class Main {
 		evaluation(tweetsList);
 
 //		Naive Bayes Classifier.
-		naiveBayes(tweetsList);
+//		naiveBayes(tweetsList);
 
 //		perceptron invocation
-		perceptron(tweetsList);
-	}
+		String modelfileName = "data/modelfileName.csv";
+        try {
+            perceptronTrain(tweetsList, modelfileName);
+            perceptronTest(tweetsList, modelfileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void perceptron(List<Tweet> tweetsList){
-
-	}
 
 	public static void naiveBayes(List<Tweet> tweetsList){
 		Map<String, List<String>> trainingEx = new HashMap<String, List<String>>();
@@ -145,6 +154,109 @@ public class Main {
         System.out.println("Macro-Recall: " + macroRecall/Labels.getSize());
         System.out.println("Macro-Fscore: " + macroFscore/Labels.getSize());
 		System.out.println("Macro-Accuracy: " + macroAccuracy / Labels.getSize());
+	}
+
+	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName) throws IOException {
+		//Set Features for each Tweet
+		for (int i = 0; i < tweetsList.size(); i++) {
+			Tweet tweet = tweetsList.get(i);
+			Map<String, Double> featureVector = new HashMap<String, Double>();
+			featureVector.put("1", 0.2);
+			featureVector.put("2", 0.3);
+			tweet.setFeatures(featureVector);
+		}
+
+		// Define the number of maximum epoches or iterations
+		int MAX_ITER = 100;
+
+		// Initialize the weight vector
+		Map<String, Map<String, Double>> weightMap = new HashMap<String, Map<String, Double>>();
+		// Create multi-class perceptron
+		MultiClassPerceptron perceptron = new MultiClassPerceptron();
+		// train the model
+		weightMap = perceptron.trainModel(tweetsList, MAX_ITER);
+		// writes the weights into the file
+		writeWeights(modelfileName, weightMap);
+	}
+
+	public static void perceptronTest(List<Tweet> tweetsList, String weightFileName) throws IOException {
+		Map<String, Map<String, Double>> weightMap = readWeights(weightFileName);
+		MultiClassPerceptron perceptron = new MultiClassPerceptron();
+		List<Tweet> listPredictedTweet = new ArrayList<Tweet>();
+		for (Tweet tweetInstance : tweetsList) {
+
+			tweetInstance = perceptron.testModel(tweetInstance, weightMap);
+			listPredictedTweet.add(tweetInstance);
+		}
+
+		System.out.println("Evaluation for Perceptron");
+		evaluation(listPredictedTweet);
+	}
+
+	/*
+	* utility functions
+	*/
+	private static void writeWeights(String fileName, Map<String, Map<String, Double>> weightMap) throws IOException {
+
+		FileWriter writer = new FileWriter(fileName);
+
+		for (String label : weightMap.keySet()) {
+			writer.append(label);
+			writer.append("\n");
+			Map<String, Double> weight = weightMap.get(label);
+			for (String feature : weight.keySet()) {
+				writer.append(feature + "------:::::::::::::::::::::::::::::------" + weight.get(feature));
+				writer.append("\n");
+			}
+			writer.append("------------------------------------");
+			writer.append("\n");
+		}
+		writer.flush();
+		writer.close();
+
+	}
+
+	private static Map<String, Map<String, Double>> readWeights(String fileName) throws IOException {
+
+		// int featuresNumber = ApplicationDetails.numOfFeatures + 1;
+		Map<String, Map<String, Double>> weightMap = new HashMap<String, Map<String, Double>>();
+
+		String line;
+		BufferedReader br;
+		try {
+			Map<String, Double> weight = new HashMap<String, Double>();
+			String tempCategory = "";
+
+			br = new BufferedReader(new FileReader(fileName));
+			while ((line = br.readLine()) != null) {
+
+				if (line.isEmpty()) {
+					continue;
+				} else if (line.contains("------:::::::::::::::::::::::::::::------")) {
+					String elem[] = line.split("------:::::::::::::::::::::::::::::------");
+					try {
+						weight.put(elem[0], Double.parseDouble(elem[1]));
+					} catch (Exception e) {
+						System.out.println(line);
+
+						System.out.println(elem[0] + "--------" + elem[1]);
+
+						break;
+					}
+				} else if (line.equalsIgnoreCase("------------------------------------")) {
+					weightMap.put(tempCategory, weight);
+					weight = new HashMap<String, Double>();
+					tempCategory = "";
+				} else {
+					tempCategory = line;
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return weightMap;
+
 	}
 
 }
