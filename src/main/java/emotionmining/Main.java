@@ -31,7 +31,8 @@ public class Main {
 		corpus.setPredictedFileName("data/dev-predicted.csv");
 		// Get tweets list with their given gold and predicted labels.
 		corpus.getEvaluationData();
-		List<Tweet> tweetsList = corpus.getTweetsList().subList(0, 100);
+		List<Tweet> tweetsList = corpus.getTweetsList();
+//                .subList(0, 100);
 
 //		evaluation(tweetsList);
 
