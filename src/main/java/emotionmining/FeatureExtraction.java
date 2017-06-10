@@ -174,7 +174,7 @@ public class FeatureExtraction {
             if (str != null && str.length() > 0) {
                 str = str.substring(0, str.length() - 1);
             }
-            writer.append(tweet.getTweet() + ":::::::" + str + "\n");
+            writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
             tweet.setFeatures(frequencymap);
         }
         writer.flush();
