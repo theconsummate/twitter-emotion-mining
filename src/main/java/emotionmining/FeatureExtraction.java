@@ -74,7 +74,7 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      * */
-    public static void posTaggingAndStemming(List<Tweet> tweetsList) {
+    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList) {
 
         LexicalizedParser lp = LexicalizedParser.loadModel("data/englishPCFG.ser.gz"); // Create new parser
         //lp.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"}); // set max sentence length if you want
@@ -87,28 +87,31 @@ public class FeatureExtraction {
         // Read File Line By Line
         String strLine;
         for(Tweet tweet: tweetsList) {
-            System.out.println ("Tokenizing and Parsing: "+tweet.getTweet()); // print current line to console
+//            System.out.println ("Processing: "+tweet.getTweet()); // print current line to console
+            String text = preprocess(tweet.getTweet());
+//            System.out.println ("Tokenizing and Parsing: "+text); // print current line to console
 
             // do all the standard java over-complication to use the stanford parser tokenizer
-            sr = new StringReader(tweet.getTweet());
+            sr = new StringReader(text);
             tkzr = PTBTokenizer.newPTBTokenizer(sr);
             List toks = tkzr.tokenize();
-            System.out.println ("tokens: "+toks);
+//            System.out.println ("tokens: "+toks);
 
             Tree parse = (Tree) lp.apply(toks); // finally, we actually get to parse something
 
             // Output Option 1: Printing out various data by accessing it programmatically
 
             // Get words, stemmed words and POS tags
-            ArrayList<String> words = new ArrayList();
+
             ArrayList<String> stems = new ArrayList();
+            /*ArrayList<String> words = new ArrayList();
             ArrayList<String> tags = new ArrayList();
 
             // Get words and Tags
             for (TaggedWord tw : parse.taggedYield()){
                 words.add(tw.word());
                 tags.add(tw.tag());
-            }
+            }*/
 
             // Get stems
             ls.visitTree(parse); // apply the stemmer to the tree
@@ -117,16 +120,16 @@ public class FeatureExtraction {
             }
 
             // Get dependency tree
-            TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+            /*TreebankLanguagePack tlp = new PennTreebankLanguagePack();
             GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
             GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
             Collection tdl = gs.typedDependenciesCollapsed();
-
+*/
             // And print!
-            System.out.println("words: "+words);
-            System.out.println("POStags: "+tags);
-            System.out.println("stemmedWordsAndTags: "+stems);
-            System.out.println("typedDependencies: "+tdl);
+            /*System.out.println("words: "+words);
+            System.out.println("POStags: "+tags);*/
+//            System.out.println("stemmedWordsAndTags: "+stems);
+//            System.out.println("typedDependencies: "+tdl);
 
             // Output Option 2: Printing out various data using TreePrint
 
@@ -147,8 +150,35 @@ public class FeatureExtraction {
             //TreePrint tp = new TreePrint("wordsAndTags,typedDependencies");
             //tp.printTree(parse);
 
-            System.out.println(); // separate output lines
-        }
 
+            HashMap<String,Double> frequencymap = new HashMap<String,Double>();
+            double sum = 0;
+            for(String a : stems) {
+                if(frequencymap.containsKey(a)) {
+                    frequencymap.put(a, frequencymap.get(a)+ (1/stems.size()) );
+                    sum += frequencymap.get(a);
+                }
+                else{ frequencymap.put(a, (double) 1/stems.size()); sum += frequencymap.get(a);}
+            }
+
+//            System.out.println("frequency map: "+frequencymap);
+//            System.out.println("frequency sum: "+sum);
+
+//            System.out.println(); // separate output lines
+            tweet.setFeatures(frequencymap);
+        }
+        return tweetsList;
+    }
+
+    /**
+     * Preprocess the text by removing punctuation, duplicate spaces and
+     * lowercasing it.
+     *
+     * @param text
+     * @return
+     */
+    private static String preprocess(String text) {
+        return text.replaceAll("(http|ftp|https)://[^\\s]+", "").
+                replaceAll("\\p{P}", " ").replaceAll("\\s+", " ").toLowerCase(Locale.getDefault());
     }
 }

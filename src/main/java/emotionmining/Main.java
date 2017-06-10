@@ -1,17 +1,20 @@
 package emotionmining;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-
 import emotionmining.model.Corpus;
 import emotionmining.model.Labels;
 import emotionmining.model.NaiveBayesKnowledgeBase;
 import emotionmining.model.Tweet;
 import emotionmining.naivebayes.NaiveBayes;
 import emotionmining.perceptron.MultiClassPerceptron;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *         This is the class with main method. It outputs the TP, FP, FN
@@ -28,7 +31,7 @@ public class Main {
 		corpus.setPredictedFileName("data/dev-predicted.csv");
 		// Get tweets list with their given gold and predicted labels.
 		corpus.getEvaluationData();
-		List<Tweet> tweetsList = corpus.getTweetsList();
+		List<Tweet> tweetsList = corpus.getTweetsList().subList(0, 100);
 
 //		evaluation(tweetsList);
 
@@ -36,14 +39,14 @@ public class Main {
 //		naiveBayes(tweetsList);
 
 //		perceptron invocation
-//		String modelfileName = "data/modelfileName.csv";
-//        try {
-//            perceptronTrain(tweetsList, modelfileName);
-//            perceptronTest(tweetsList, modelfileName);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        FeatureExtraction.posTaggingAndStemming(tweetsList);
+		String modelfileName = "data/modelfileName.csv";
+        try {
+            perceptronTrain(tweetsList, modelfileName);
+            perceptronTest(tweetsList, modelfileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        FeatureExtraction.posTaggingAndStemming(tweetsList);
     }
 
 
@@ -155,13 +158,17 @@ public class Main {
 
 	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName) throws IOException {
 		//Set Features for each Tweet
-		for (int i = 0; i < tweetsList.size(); i++) {
+		/*for (int i = 0; i < tweetsList.size(); i++) {
 			Tweet tweet = tweetsList.get(i);
 			Map<String, Double> featureVector = new HashMap<String, Double>();
 			featureVector.put("1", 0.2);
 			featureVector.put("2", 0.3);
 			tweet.setFeatures(featureVector);
-		}
+		}*/
+        System.out.println("********* Extracting features *********");
+        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList);
+
+        System.out.println("********* Starting tranining *********");
 
 		// Define the number of maximum epoches or iterations
 		int MAX_ITER = 100;
