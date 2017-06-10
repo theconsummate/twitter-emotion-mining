@@ -8,6 +8,8 @@ import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
 import emotionmining.model.Tweet;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -74,7 +76,7 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      * */
-    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList) {
+    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList) throws IOException {
 
         LexicalizedParser lp = LexicalizedParser.loadModel("data/englishPCFG.ser.gz"); // Create new parser
         //lp.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"}); // set max sentence length if you want
@@ -86,6 +88,7 @@ public class FeatureExtraction {
 
         // Read File Line By Line
         String strLine;
+        FileWriter writer = new FileWriter("data/stems.csv");
         for(Tweet tweet: tweetsList) {
 //            System.out.println ("Processing: "+tweet.getTweet()); // print current line to console
             String text = preprocess(tweet.getTweet());
@@ -153,7 +156,9 @@ public class FeatureExtraction {
 
             HashMap<String,Double> frequencymap = new HashMap<String,Double>();
             double sum = 0;
+            String str = "";
             for(String a : stems) {
+                str += a + ",";
                 if(frequencymap.containsKey(a)) {
                     frequencymap.put(a, frequencymap.get(a)+ (1/stems.size()) );
                     sum += frequencymap.get(a);
@@ -165,8 +170,15 @@ public class FeatureExtraction {
 //            System.out.println("frequency sum: "+sum);
 
 //            System.out.println(); // separate output lines
+//            Save to file
+            if (str != null && str.length() > 0) {
+                str = str.substring(0, str.length() - 1);
+            }
+            writer.append(tweet.getTweet() + ":::::::" + str + "\n");
             tweet.setFeatures(frequencymap);
         }
+        writer.flush();
+        writer.close();
         return tweetsList;
     }
 
