@@ -1,1 +1,9 @@
 *.csv
+.idea/*
+.classpath
+build/
+bin/
+.gradle
+.settings/*
+.project
+data/

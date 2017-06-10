@@ -1,0 +1,17 @@
+group 'com'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin:'application'
+mainClassName = "emotionmining.Main"
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'edu.stanford.nlp:stanford-corenlp:3.7.0'
+}
