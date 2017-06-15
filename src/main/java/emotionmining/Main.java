@@ -40,7 +40,7 @@ public class Main {
 //		naiveBayes(tweetsList);
 
 //		perceptron invocation
-		String modelfileName = "data/modelfileName.csv";
+		String modelfileName = "data/snowballStemModel.csv";
         try {
             perceptronTrain(tweetsList, modelfileName);
             perceptronTest(tweetsList, modelfileName);
@@ -48,6 +48,8 @@ public class Main {
             e.printStackTrace();
         }
 //        FeatureExtraction.posTaggingAndStemming(tweetsList);
+
+//		FeatureExtraction.snowballStemmer(tweetsList);
     }
 
 
@@ -167,7 +169,8 @@ public class Main {
 			tweet.setFeatures(featureVector);
 		}*/
         System.out.println("********* Extracting features *********");
-        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList);
+//        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList);
+        tweetsList = FeatureExtraction.snowballStemmer(tweetsList);
 
         System.out.println("********* Starting tranining *********");
 

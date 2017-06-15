@@ -7,6 +7,8 @@ import edu.stanford.nlp.trees.*;
 import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
 import emotionmining.model.Tweet;
+import org.tartarus.snowball.ext.EnglishStemmer;
+import org.tartarus.snowball.ext.englishStemmer;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -87,7 +89,6 @@ public class FeatureExtraction {
         WordStemmer ls = new WordStemmer(); // stemmer/lemmatizer object
 
         // Read File Line By Line
-        String strLine;
         FileWriter writer = new FileWriter("data/stems.csv");
         for(Tweet tweet: tweetsList) {
 //            System.out.println ("Processing: "+tweet.getTweet()); // print current line to console
@@ -183,6 +184,56 @@ public class FeatureExtraction {
     }
 
     /**
+     * Performs POS Tagging and Stemming using the Snowball stemmer.
+     *
+     * @param tweetsList
+     * @return
+     */
+    public static List<Tweet> snowballStemmer(List<Tweet> tweetsList) throws IOException {
+        englishStemmer englishStemmer = new englishStemmer();
+        FileWriter writer = new FileWriter("data/snowball_stems.csv");
+        for (Tweet tweet : tweetsList) {
+            ArrayList<String> stems = new ArrayList();
+            String str = preprocess(tweet.getTweet());
+            for (String word : str.split(" ")) {
+                englishStemmer.setCurrent(word.trim());
+                if (englishStemmer.stem()) {
+//                System.out.println("word:" + word);
+                    stems.add(englishStemmer.getCurrent());
+                }
+            }
+
+            HashMap<String,Double> frequencymap = new HashMap<String,Double>();
+            double sum = 0;
+            str = "";
+            for(String a : stems) {
+                str += a + ",";
+                if(frequencymap.containsKey(a)) {
+                    frequencymap.put(a, frequencymap.get(a)+ (1/stems.size()) );
+                    sum += frequencymap.get(a);
+                }
+                else{ frequencymap.put(a, (double) 1/stems.size()); sum += frequencymap.get(a);}
+            }
+
+//            System.out.println("frequency map: "+frequencymap);
+//            System.out.println("frequency sum: "+sum);
+
+//            System.out.println(); // separate output lines
+//            Save to file
+            if (str != null && str.length() > 0) {
+                str = str.substring(0, str.length() - 1);
+            }
+            writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
+            tweet.setFeatures(frequencymap);
+
+
+        }
+        writer.flush();
+        writer.close();
+        return tweetsList;
+    }
+
+    /**
      * Preprocess the text by removing punctuation, duplicate spaces and
      * lowercasing it.
      *
@@ -191,6 +242,6 @@ public class FeatureExtraction {
      */
     private static String preprocess(String text) {
         return text.replaceAll("(http|ftp|https)://[^\\s]+", "").
-                replaceAll("\\p{P}", " ").replaceAll("\\s+", " ").toLowerCase(Locale.getDefault());
+                replaceAll("\\p{P}", " ").replaceAll("\\s+", " ").toLowerCase(Locale.getDefault()).trim();
     }
 }
