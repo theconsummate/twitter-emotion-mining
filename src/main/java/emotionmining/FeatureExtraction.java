@@ -78,7 +78,7 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      * */
-    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList) throws IOException {
+    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList, String filename) throws IOException {
 
         LexicalizedParser lp = LexicalizedParser.loadModel("data/englishPCFG.ser.gz"); // Create new parser
         //lp.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"}); // set max sentence length if you want
@@ -89,7 +89,7 @@ public class FeatureExtraction {
         WordStemmer ls = new WordStemmer(); // stemmer/lemmatizer object
 
         // Read File Line By Line
-        FileWriter writer = new FileWriter("data/stems.csv");
+        FileWriter writer = new FileWriter(filename);
         for(Tweet tweet: tweetsList) {
 //            System.out.println ("Processing: "+tweet.getTweet()); // print current line to console
             String text = preprocess(tweet.getTweet());
@@ -189,9 +189,9 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      */
-    public static List<Tweet> snowballStemmer(List<Tweet> tweetsList) throws IOException {
+    public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename) throws IOException {
         englishStemmer englishStemmer = new englishStemmer();
-        FileWriter writer = new FileWriter("data/snowball_stems.csv");
+        FileWriter writer = new FileWriter(filename);
         for (Tweet tweet : tweetsList) {
             ArrayList<String> stems = new ArrayList();
             String str = preprocess(tweet.getTweet());
