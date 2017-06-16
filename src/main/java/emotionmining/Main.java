@@ -27,12 +27,13 @@ public class Main {
 	public static void main(String args[]) {
 		// Set the file names for the gold and predicted data.
 		Corpus corpus = new Corpus();
-		corpus.setGoldFileName("data/dev.csv");
+//		corpus.setGoldFileName("data/dev.csv");
+		corpus.setGoldFileName("data/train.csv");
 		corpus.setPredictedFileName("data/dev-predicted.csv");
 		// Get tweets list with their given gold and predicted labels.
 		corpus.getEvaluationData();
 		List<Tweet> tweetsList = corpus.getTweetsList();
-//                .subList(0, 100);
+//                .subList(0, 10);
 
 //		evaluation(tweetsList);
 
@@ -41,10 +42,19 @@ public class Main {
 
 //		perceptron invocation
 		String modelfileName = "data/snowballStemModel.csv";
+		String modelfileName1 = "data/stanfordStemModel.csv";
+
         try {
-            perceptronTrain(tweetsList, modelfileName);
+//            perceptronTrain(tweetsList, modelfileName);
+			System.out.println("Evaluating Snowball model");
+			System.out.println("Computing features using snowball stemmer");
+			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv");
             perceptronTest(tweetsList, modelfileName);
-        } catch (IOException e) {
+			System.out.println("\n\nEvaluating Stanford model");
+			System.out.println("Computing features using stanford parser");
+			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv");
+			perceptronTest(tweetsList, modelfileName1);
+		} catch (IOException e) {
             e.printStackTrace();
         }
 //        FeatureExtraction.posTaggingAndStemming(tweetsList);
@@ -169,8 +179,8 @@ public class Main {
 			tweet.setFeatures(featureVector);
 		}*/
         System.out.println("********* Extracting features *********");
-//        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList);
-        tweetsList = FeatureExtraction.snowballStemmer(tweetsList);
+//        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_stems.csv");
+        tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_stems.csv");
 
         System.out.println("********* Starting tranining *********");
 
