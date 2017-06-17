@@ -27,8 +27,8 @@ public class Main {
 	public static void main(String args[]) {
 		// Set the file names for the gold and predicted data.
 		Corpus corpus = new Corpus();
-//		corpus.setGoldFileName("data/dev.csv");
-		corpus.setGoldFileName("data/train.csv");
+		corpus.setGoldFileName("data/dev.csv");
+//		corpus.setGoldFileName("data/train.csv");
 		corpus.setPredictedFileName("data/dev-predicted.csv");
 		// Get tweets list with their given gold and predicted labels.
 		corpus.getEvaluationData();
@@ -38,8 +38,14 @@ public class Main {
 //		evaluation(tweetsList);
 
 //		Naive Bayes Classifier.
-//		naiveBayes(tweetsList);
+		NaiveBayesKnowledgeBase knowledgeBase = naiveBayesTrain(tweetsList);
+		corpus.setGoldFileName("data/train.csv");
+		corpus.getEvaluationData();
+		tweetsList = corpus.getTweetsList();
+		naiveBayesTest(knowledgeBase, tweetsList);
 
+		/*Starting Percepotron training and Evaluation*/
+/*
 //		perceptron invocation
 		String modelfileName = "data/snowballStemModel.csv";
 		String modelfileName1 = "data/stanfordStemModel.csv";
@@ -57,13 +63,13 @@ public class Main {
 		} catch (IOException e) {
             e.printStackTrace();
         }
+*/
 //        FeatureExtraction.posTaggingAndStemming(tweetsList);
 
 //		FeatureExtraction.snowballStemmer(tweetsList);
     }
 
-
-	public static void naiveBayes(List<Tweet> tweetsList){
+	public static NaiveBayesKnowledgeBase naiveBayesTrain(List<Tweet> tweetsList){
 		Map<String, List<String>> trainingEx = new HashMap<String, List<String>>();
 		for(Tweet tweet: tweetsList){
 			List<String> tws = trainingEx.get(tweet.getGoldLabel());
@@ -88,30 +94,18 @@ public class Main {
 
 		//get trained classifier knowledgeBase
 		NaiveBayesKnowledgeBase knowledgeBase = nb.getKnowledgeBase();
+		return knowledgeBase;
+	}
 
-		nb = null;
-		trainingExamples = null;
-
-
+	public static void naiveBayesTest(NaiveBayesKnowledgeBase knowledgeBase, List<Tweet> tweetsList){
 		//Use classifier
-		nb = new NaiveBayes(knowledgeBase);
-		/*String exampleEn = "I am sad";
-		String outputEn = nb.test(exampleEn);
-		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleEn, outputEn);
+		NaiveBayes nb = new NaiveBayes(knowledgeBase);
 
-		String exampleFr = "I am happy";
-		String outputFr = nb.test(exampleFr);
-		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleFr, outputFr);
-
-		String exampleDe = "I am in angry";
-		String outputDe = nb.test(exampleDe);
-		System.out.format("The sentense \"%s\" was classified as \"%s\".%n", exampleDe, outputDe);*/
-
-        for(Tweet tweet: tweetsList){
-            tweet.setPredictedLabel(nb.test(tweet.getTweet()));
-        }
-        System.out.println("Evaluation for Naive Bayes");
-        evaluation(tweetsList);
+		for(Tweet tweet: tweetsList){
+			tweet.setPredictedLabel(nb.test(tweet.getTweet()));
+		}
+		System.out.println("Evaluation for Naive Bayes");
+		evaluation(tweetsList);
 	}
 
 
