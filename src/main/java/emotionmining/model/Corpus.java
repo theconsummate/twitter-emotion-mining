@@ -3,7 +3,9 @@ package emotionmining.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -20,6 +22,8 @@ public class Corpus {
 							// during the evaluation calculation.
 	private String goldFileName;
 	private String predictedFileName;
+
+	private static final String NRCFILENAME = "data/NRC-emotion-lexicon.txt";
 
 	// Getters Setters
 	public List<Tweet> getTweetsList() {
@@ -92,5 +96,42 @@ public class Corpus {
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+
+	public static Map<String, List<String>> getNrcDict() {
+		BufferedReader br;
+		String line;
+		Map<String, List<String>> emotionMap = new HashMap<String, List<String>>();
+		try {
+			br = new BufferedReader(new FileReader(NRCFILENAME));
+			String tempWord = "";
+			List<String> emotions = null;
+			while ((line = br.readLine()) != null) {
+				String elem[] = line.split("	");
+				if (Integer.parseInt(elem[2]) == 0) {
+					continue;
+				}
+				if (tempWord.length() == 0) {
+					tempWord = elem[0];
+					emotions = new ArrayList<String>();
+				}
+				if (!(tempWord.equalsIgnoreCase(elem[0]))) {
+					emotionMap.put(tempWord, emotions);
+					tempWord = elem[0];
+					emotions = new ArrayList<String>();
+				}
+
+				emotions.add(elem[1]);
+			}
+
+			emotionMap.put(tempWord, emotions);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		return emotionMap;
+
 	}
 }
