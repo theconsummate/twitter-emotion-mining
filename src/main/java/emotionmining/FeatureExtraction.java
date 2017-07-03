@@ -4,6 +4,7 @@ import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.trees.*;
+import emotionmining.model.Corpus;
 import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
 import emotionmining.model.Tweet;
@@ -190,6 +191,7 @@ public class FeatureExtraction {
      * @return
      */
     public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename) throws IOException {
+        Map<String, List<String>> nrcMap = Corpus.getNrcDict();
         englishStemmer englishStemmer = new englishStemmer();
         FileWriter writer = new FileWriter(filename);
         for (Tweet tweet : tweetsList) {
@@ -213,6 +215,8 @@ public class FeatureExtraction {
                     sum += frequencymap.get(a);
                 }
                 else{ frequencymap.put(a, (double) 1/stems.size()); sum += frequencymap.get(a);}
+                /*Other Features*/
+                NrcEmotionFeatures(a, nrcMap, frequencymap);
             }
 
 //            System.out.println("frequency map: "+frequencymap);
@@ -231,6 +235,21 @@ public class FeatureExtraction {
         writer.flush();
         writer.close();
         return tweetsList;
+    }
+
+    private static void NrcEmotionFeatures(String stem, Map<String, List<String>> nrcMap, Map<String, Double> featureVector){
+        if (nrcMap.containsKey(stem)) {
+            List<String> emotions = nrcMap.get(stem);
+            for (String emotion : emotions) {
+                String featureNameStr = "NRC-" + emotion.trim();
+
+                if (featureVector.containsKey(featureNameStr))
+                    featureVector.put(featureNameStr, featureVector.get(featureNameStr) + 1.0);
+                else
+                    featureVector.put(featureNameStr, 1.0);
+            }
+        }
+
     }
 
     /**
