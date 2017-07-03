@@ -24,6 +24,7 @@ public class Corpus {
 	private String predictedFileName;
 
 	private static final String NRCFILENAME = "data/NRC-emotion-lexicon.txt";
+	private static final String NEGATIONDICTFILENAME = "data/NegationDictionary";
 
 	// Getters Setters
 	public List<Tweet> getTweetsList() {
@@ -133,5 +134,22 @@ public class Corpus {
 
 		return emotionMap;
 
+	}
+
+	public List<String> getNegationDict() {
+		BufferedReader br;
+		String line;
+		List<String> negationDictionary = new ArrayList<String>();
+		try {
+			br = new BufferedReader(new FileReader(NEGATIONDICTFILENAME));
+
+			while ((line = br.readLine()) != null) {
+				negationDictionary.add(line.trim().toLowerCase());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return negationDictionary;
 	}
 }
