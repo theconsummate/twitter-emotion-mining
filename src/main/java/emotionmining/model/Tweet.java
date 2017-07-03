@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cmu.arktweetnlp.Twokenize;
+import corpus.Token;
+
 /**
  * 
  * @author AysoltanGravina
@@ -74,5 +77,30 @@ public class Tweet {
 			tokensList.add(token);
 			setTokensList(tokensList);
 		}
+	}
+	
+	public void tokenize(String content) {
+
+		List<Token> tokensList = new ArrayList<Token>();
+
+		for (String word : Twokenize.tokenizeRawTweetText(content)) {
+
+			String cleanWord = word;
+
+			// Replace URLs to a generic URL
+			if (word.matches("http.*|ww\\..*")) {
+				cleanWord = "http://www.url.com";
+			}
+
+			// Replaces user mentions to a generic user
+			else if (word.matches("@.*")) {
+				cleanWord = "@user";
+			}
+
+			Token token = new Token();
+			token.setToken(cleanWord);
+			tokensList.add(token);
+		}
+		setTokensList(tokensList);
 	}
 }
