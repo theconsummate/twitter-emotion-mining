@@ -3,6 +3,7 @@ package emotionmining;
 import emotionmining.model.Corpus;
 import emotionmining.model.Labels;
 import emotionmining.model.NaiveBayesKnowledgeBase;
+import emotionmining.model.Token;
 import emotionmining.model.Tweet;
 import emotionmining.naivebayes.NaiveBayes;
 import emotionmining.perceptron.MultiClassPerceptron;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cmu.arktweetnlp.Twokenize;
 
 /**
  *         This is the class with main method. It outputs the TP, FP, FN
@@ -268,6 +271,69 @@ public class Main {
 			e.printStackTrace();
 		}
 		return weightMap;
+
+	}
+	
+	public static void otherMain() throws IOException {
+		// Set the file names for the train data.
+		Corpus corpus = new Corpus();
+		corpus.setTrainFileName("train.csv");
+		// Get data for train
+		corpus.getDataForTrain();
+		// Get tweets list with their given gold label.
+		List<Tweet> tweetsList = corpus.getTweetsList();
+
+		//List<String> tID = new ArrayList<String>();
+
+		// Set Features for each Tweet
+		for (int i = 0; i < tweetsList.size(); i++) {
+			Tweet tweet = tweetsList.get(i);
+
+			// System.out.println(tweet.getTweet());
+			// System.out.println("Gold Label: " + tweet.getGoldLabel());
+
+			// Filtering of Tweet-Duplicates
+			/*if (tID.contains(tweet.getTweetID())) {
+				//System.out.println("Tweet is allready exists: " + tweet.getTweetID());
+				//continue;
+			}
+			tID.add(tweet.getTweetID());*/
+
+			// Filter [NEWLINE] from Tweet
+			if (tweet.getTweet().contains("[NEWLINE]")) {
+				tweet.setTweet(tweet.getTweet().replaceAll("\\[NEWLINE\\]", ""));
+
+			}
+			/*
+			 * //For german tweets if(tweet.getTweet().contains("#") &&
+			 * tweet.getTweet().contains("ü")){
+			 * tweet.setTweet(tweet.getTweet().replaceAll("ü", "ue"));
+			 * 
+			 * }
+			 */
+
+			// Tokenize a Tweet
+			tweet.tokenize(tweet.getTweet());
+
+			// Put each Token of Tweet into Feature Vector with value 1.0
+			Map<String, Double> featureVector = new HashMap<String, Double>();
+			// System.out.println("Tweet Tokens:");
+			for (Token token : tweet.getTokensList()) {
+				// System.out.println("\t" + token.getToken());
+				featureVector.put(token.toString(), 1.0);
+				tweet.setFeatures(featureVector);
+			}
+			//System.out.println("\n");
+
+			/*
+			 * Map<String, Double> featureVector = new HashMap<String,
+			 * Double>(); featureVector.put("1", 0.2);
+			 * tweet.setFeatures(featureVector);
+			 */
+		}
+
+		// Call the perceptron for training
+		perceptronTrain(tweetsList, "filename");
 
 	}
 
