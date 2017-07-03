@@ -28,6 +28,10 @@ public class FeatureExtraction {
      * @param dataset
      * @return
      */
+
+    private static List<String> negationDictionary;
+    private static Map<String, List<String>> nrcMap;
+
     public FeatureStats extractFeatureStats(List<Document> dataset) {
         FeatureStats stats = new FeatureStats();
 
@@ -191,13 +195,13 @@ public class FeatureExtraction {
      * @return
      */
     public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename) throws IOException {
-        Map<String, List<String>> nrcMap = Corpus.getNrcDict();
+        nrcMap = Corpus.getNrcDict();
         englishStemmer englishStemmer = new englishStemmer();
         FileWriter writer = new FileWriter(filename);
         for (Tweet tweet : tweetsList) {
             ArrayList<String> stems = new ArrayList();
-            String str = preprocess(tweet.getTweet());
-            for (String word : str.split(" ")) {
+            String processedTweet = preprocess(tweet.getTweet());
+            for (String word : processedTweet.split(" ")) {
                 englishStemmer.setCurrent(word.trim());
                 if (englishStemmer.stem()) {
 //                System.out.println("word:" + word);
@@ -205,19 +209,20 @@ public class FeatureExtraction {
                 }
             }
 
-            HashMap<String,Double> frequencymap = new HashMap<String,Double>();
+            HashMap<String,Double> featureVector = new HashMap<String,Double>();
             double sum = 0;
-            str = "";
+            String str = "";
             for(String a : stems) {
                 str += a + ",";
-                if(frequencymap.containsKey(a)) {
-                    frequencymap.put(a, frequencymap.get(a)+ (1/stems.size()) );
-                    sum += frequencymap.get(a);
+                if(featureVector.containsKey(a)) {
+                    featureVector.put(a, featureVector.get(a)+ (1/stems.size()) );
+                    sum += featureVector.get(a);
                 }
-                else{ frequencymap.put(a, (double) 1/stems.size()); sum += frequencymap.get(a);}
+                else{ featureVector.put(a, (double) 1/stems.size()); sum += featureVector.get(a);}
                 /*Other Features*/
-                NrcEmotionFeatures(a, nrcMap, frequencymap);
+                nrcEmotionFeatures(a, featureVector);
             }
+            negationFeatures(processedTweet, featureVector);
 
 //            System.out.println("frequency map: "+frequencymap);
 //            System.out.println("frequency sum: "+sum);
@@ -228,7 +233,7 @@ public class FeatureExtraction {
                 str = str.substring(0, str.length() - 1);
             }
             writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
-            tweet.setFeatures(frequencymap);
+            tweet.setFeatures(featureVector);
 
 
         }
@@ -237,16 +242,31 @@ public class FeatureExtraction {
         return tweetsList;
     }
 
-    private static void NrcEmotionFeatures(String stem, Map<String, List<String>> nrcMap, Map<String, Double> featureVector){
+    private static void nrcEmotionFeatures(String stem, Map<String, Double> featureVector){
         if (nrcMap.containsKey(stem)) {
             List<String> emotions = nrcMap.get(stem);
             for (String emotion : emotions) {
-                String featureNameStr = "NRC-" + emotion.trim();
+                String featureNameStr = "nrc-" + emotion.trim();
 
                 if (featureVector.containsKey(featureNameStr))
                     featureVector.put(featureNameStr, featureVector.get(featureNameStr) + 1.0);
                 else
                     featureVector.put(featureNameStr, 1.0);
+            }
+        }
+
+    }
+
+    /**
+     * @param tweet
+     * @param featureVector
+     * @throws IOException
+     */
+    public static void negationFeatures(String tweet, Map<String, Double> featureVector) throws IOException {
+
+        for (String negation : negationDictionary) {
+            if (tweet.contains(negation)) {
+                featureVector.put("negation", -1.0);
             }
         }
 
