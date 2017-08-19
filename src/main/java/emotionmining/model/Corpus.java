@@ -84,6 +84,12 @@ public class Corpus {
 				tweet.setPredictedLabel(brPredicted.readLine());
 				// Add all tweets with Labels into List, in order to be abele to
 				// store it into attribute variable.
+
+				// Filter [NEWLINE] from Tweet
+				if (tweet.getTweet().contains("[NEWLINE]")) {
+					tweet.setTweet(tweet.getTweet().replaceAll("\\[NEWLINE\\]", ""));
+
+				}
 				tweetsList.add(tweet);
 			}
 			// Finally set the tweets list object into attribute variable.

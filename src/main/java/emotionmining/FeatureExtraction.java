@@ -4,17 +4,12 @@ import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.trees.*;
-import emotionmining.model.Corpus;
-import emotionmining.model.Document;
-import emotionmining.model.FeatureStats;
-import emotionmining.model.Tweet;
+import emotionmining.model.*;
 import emotionmining.naivebayes.TextTokenizer;
 import org.tartarus.snowball.ext.EnglishStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -187,22 +182,42 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      */
-    public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename) throws IOException {
+    public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename, boolean readFromFile) throws IOException {
         nrcMap = Corpus.getNrcDict();
         englishStemmer englishStemmer = new englishStemmer();
-        FileWriter writer = new FileWriter(filename);
+        FileWriter writer  = null;
+        BufferedReader reader = null;
+
+        if(readFromFile){
+//            don't read from file, write new
+            reader = new BufferedReader(new FileReader(filename));
+            reader.read();
+        }
+        else {
+            writer = new FileWriter(filename);
+        }
         for (Tweet tweet : tweetsList) {
-            ArrayList<String> stems = new ArrayList();
+            List<String> stems = new ArrayList();
             String processedTweet = preprocess(tweet.getTweet());
-            for (String word : processedTweet.split(" ")) {
-                englishStemmer.setCurrent(word.trim());
-                if (englishStemmer.stem()) {
+
+            if(reader != null){
+//                read from file
+                String line = reader.readLine();
+                if(line != null){
+                    stems = Arrays.asList(line.split(":::::::")[2].split(","));
+                }
+            }
+            else {
+                for (String word : processedTweet.split(" ")) {
+                    englishStemmer.setCurrent(word.trim());
+                    if (englishStemmer.stem()) {
 //                System.out.println("word:" + word);
-                    stems.add(englishStemmer.getCurrent());
+                        stems.add(englishStemmer.getCurrent());
+                    }
                 }
             }
 
-            HashMap<String,Double> featureVector = new HashMap<String,Double>();
+            Map<String,Double> featureVector = new HashMap<String,Double>();
             double sum = 0;
             String str = "";
             for(String a : stems) {
@@ -213,9 +228,9 @@ public class FeatureExtraction {
                 }
                 else{ featureVector.put(a, (double) 1/stems.size()); sum += featureVector.get(a);}
                 /*Other Features*/
-                nrcEmotionFeatures(a, featureVector);
+                featureVector = nrcEmotionFeatures(a, featureVector);
             }
-            negationFeatures(processedTweet, featureVector);
+            featureVector = negationFeatures(processedTweet, featureVector);
 
 //            System.out.println("frequency map: "+frequencymap);
 //            System.out.println("frequency sum: "+sum);
@@ -225,17 +240,49 @@ public class FeatureExtraction {
             if (str != null && str.length() > 0) {
                 str = str.substring(0, str.length() - 1);
             }
-            writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
+            if(writer != null) {
+                writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
+            }
             tweet.setFeatures(featureVector);
 
 
         }
-        writer.flush();
-        writer.close();
+        if(writer != null) {
+            writer.flush();
+            writer.close();
+        }
+        if(reader != null){
+            reader.close();
+        }
         return tweetsList;
     }
 
-    private static void nrcEmotionFeatures(String stem, Map<String, Double> featureVector){
+    /**
+     * Performs POS Tagging and Stemming using the Snowball stemmer.
+     *
+     * @param tweetsList
+     * @return
+     */
+    public static List<Tweet> twokenizeLib(List<Tweet> tweetsList) {
+        for (Tweet tweet: tweetsList) {
+            // Tokenize a Tweet
+            tweet.tokenize(tweet.getTweet());
+
+            // Put each Token of Tweet into Feature Vector with value 1.0
+            Map<String, Double> featureVector = new HashMap<String, Double>();
+            // System.out.println("Tweet Tokens:");
+            for (Token token : tweet.getTokensList()) {
+                // System.out.println("\t" + token.getToken());
+                featureVector.put(token.toString(), 1.0);
+                tweet.setFeatures(featureVector);
+            }
+
+        }
+
+        return tweetsList;
+    }
+
+    private static Map<String, Double> nrcEmotionFeatures(String stem, Map<String, Double> featureVector){
         if (nrcMap.containsKey(stem)) {
             List<String> emotions = nrcMap.get(stem);
             for (String emotion : emotions) {
@@ -247,6 +294,7 @@ public class FeatureExtraction {
                     featureVector.put(featureNameStr, 1.0);
             }
         }
+        return featureVector;
 
     }
 
@@ -255,14 +303,14 @@ public class FeatureExtraction {
      * @param featureVector
      * @throws IOException
      */
-    public static void negationFeatures(String tweet, Map<String, Double> featureVector) throws IOException {
+    public static Map<String, Double> negationFeatures(String tweet, Map<String, Double> featureVector) throws IOException {
 
         for (String negation : negationDictionary) {
             if (tweet.contains(negation)) {
                 featureVector.put("negation", -1.0);
             }
         }
-
+        return featureVector;
     }
 
     /**
