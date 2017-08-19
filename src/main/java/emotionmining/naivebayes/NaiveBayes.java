@@ -3,7 +3,7 @@ package emotionmining.naivebayes;
 import emotionmining.FeatureExtraction;
 import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
-import emotionmining.model.NaiveBayesKnowledgeBase;
+import emotionmining.model.NaiveBayesModel;
 
 import java.util.*;
 
@@ -12,60 +12,19 @@ import java.util.*;
  */
 
 public class NaiveBayes {
-    private NaiveBayesKnowledgeBase knowledgeBase;
+    private NaiveBayesModel knowledgeBase;
 
-    /**
-     * This constructor is used when we load an already train classifier
-     *
-     * @param knowledgeBase
-     */
-    public NaiveBayes(NaiveBayesKnowledgeBase knowledgeBase) {
+    // load a classifier which has been already trained.
+    public NaiveBayes(NaiveBayesModel knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
     }
 
-    /**
-     * This constructor is used when we plan to train a new classifier.
-     */
     public NaiveBayes() {
         this(null);
     }
 
-    /**
-     * Gets the knowledgebase parameter
-     *
-     * @return
-     */
-    public NaiveBayesKnowledgeBase getKnowledgeBase() {
+    public NaiveBayesModel getKnowledgeBase() {
         return knowledgeBase;
-    }
-
-    /**
-     * Preprocesses the original dataset and converts it to a List of Documents.
-     *
-     * @param trainingDataset
-     * @return
-     */
-    private List<Document> preprocessDataset(Map<String, String[]> trainingDataset) {
-        List<Document> dataset = new ArrayList<Document>();
-        String category;
-        String[] examples;
-        Document doc;
-        Iterator<Map.Entry<String, String[]>> it = trainingDataset.entrySet().iterator();
-//loop through all the categories and training examples
-        while (it.hasNext()) {
-            Map.Entry<String, String[]> entry = it.next();
-            category = entry.getKey();
-            examples = entry.getValue();
-            for (int i = 0; i < examples.length; ++i) {
-//for each example in the category tokenize its text and convert it into a Document object.
-                doc = TextTokenizer.tokenize(examples[i]);
-                doc.category = category;
-                dataset.add(doc);
-//examples[i] = null; //try freeing some memory
-            }
-//it.remove(); //try freeing some memory
-        }
-        return dataset;
     }
 
     /**
@@ -104,11 +63,11 @@ public class NaiveBayes {
      */
     public void train(Map<String, String[]> trainingDataset, Map<String, Double> categoryPriors) throws IllegalArgumentException {
 //preprocess the given dataset
-        List<Document> dataset = preprocessDataset(trainingDataset);
+        List<Document> dataset = FeatureExtraction.preprocessNaiveBayes(trainingDataset);
 //produce the feature stats and select the best features
         FeatureStats featureStats = selectFeatures(dataset);
 //intiliaze the knowledgeBase of the classifier
-        knowledgeBase = new NaiveBayesKnowledgeBase();
+        knowledgeBase = new NaiveBayesModel();
         knowledgeBase.n = featureStats.n; //number of observations
         knowledgeBase.d = featureStats.featureCategoryJointCount.size(); //number of features
 //check is prior probabilities are given

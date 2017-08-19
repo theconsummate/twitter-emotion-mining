@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  * Created by dhruv on 27/05/17.
  */
-public class NaiveBayesKnowledgeBase {
+public class NaiveBayesModel {
     /**
      * number of training observations
      */

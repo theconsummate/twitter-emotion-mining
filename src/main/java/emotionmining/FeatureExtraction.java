@@ -8,6 +8,7 @@ import emotionmining.model.Corpus;
 import emotionmining.model.Document;
 import emotionmining.model.FeatureStats;
 import emotionmining.model.Tweet;
+import emotionmining.naivebayes.TextTokenizer;
 import org.tartarus.snowball.ext.EnglishStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
 
@@ -282,5 +283,29 @@ public class FeatureExtraction {
     private static String preprocess(String text) {
         return text.replaceAll("(http|ftp|https)://[^\\s]+", "").
                 replaceAll("\\p{P}", " ").replaceAll("\\s+", " ").toLowerCase(Locale.getDefault()).trim();
+    }
+
+    public static List<Document> preprocessNaiveBayes(Map<String, String[]> data) {
+        List<Document> dataset = new ArrayList<Document>();
+        String category;
+        String[] examples;
+        Document doc;
+        Iterator<Map.Entry<String, String[]>> it = data.entrySet().iterator();
+//loop through all the categories and training examples
+        while (it.hasNext()) {
+            Map.Entry<String, String[]> entry = it.next();
+            category = entry.getKey();
+            examples = entry.getValue();
+            for (int i = 0; i < examples.length; ++i) {
+//for each example in the category tokenize its text and convert it into a Document object.
+                doc = TextTokenizer.tokenize(examples[i]);
+                doc.category = category;
+                dataset.add(doc);
+//examples[i] = null; //try freeing some memory
+            }
+//it.remove(); //try freeing some memory
+        }
+        return dataset;
+
     }
 }
