@@ -142,7 +142,7 @@ public class Corpus {
 
 	}
 
-	public List<String> getNegationDict() {
+	public static List<String> getNegationDict() {
 		BufferedReader br;
 		String line;
 		List<String> negationDictionary = new ArrayList<String>();

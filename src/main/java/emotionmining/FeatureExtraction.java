@@ -184,6 +184,7 @@ public class FeatureExtraction {
      */
     public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename, boolean readFromFile) throws IOException {
         nrcMap = Corpus.getNrcDict();
+        negationDictionary = Corpus.getNegationDict();
         englishStemmer englishStemmer = new englishStemmer();
         FileWriter writer  = null;
         BufferedReader reader = null;
