@@ -12,101 +12,62 @@ import java.util.*;
  */
 
 public class NaiveBayes {
-    private NaiveBayesModel knowledgeBase;
+    private NaiveBayesModel naiveBayesModel;
 
     // load a classifier which has been already trained.
     public NaiveBayes(NaiveBayesModel knowledgeBase) {
-        this.knowledgeBase = knowledgeBase;
+        this.naiveBayesModel = knowledgeBase;
     }
 
     public NaiveBayes() {
         this(null);
     }
 
-    public NaiveBayesModel getKnowledgeBase() {
-        return knowledgeBase;
+    public NaiveBayesModel getNaiveBayesModel() {
+        return naiveBayesModel;
     }
 
-    /**
-     * Gathers the required counts for the features and performs feature selection
-     * on the above counts. It returns a FeatureStats object that is later used
-     * for calculating the probabilities of the model.
-     *
-     * @param dataset
-     * @return
-     */
-    private FeatureStats selectFeatures(List<Document> dataset) {
-        FeatureExtraction featureExtractor = new FeatureExtraction();
-//the FeatureStats object contains statistics about all the features found in the documents
-        FeatureStats stats = featureExtractor.extractFeatureStats(dataset); //extract the stats of the dataset
-////we pass this information to the feature selection algorithm and we get a list with the selected features
-//        Map<String, Double> selectedFeatures = featureExtractor.chisquare(stats, chisquareCriticalValue);
-////clip from the stats all the features that are not selected
-//        Iterator<Map.Entry<String, Map<String, Integer>>> it = stats.featureCategoryJointCount.entrySet().iterator();
-//        while (it.hasNext()) {
-//            String feature = it.next().getKey();
-//            if (selectedFeatures.containsKey(feature) == false) {
-////if the feature is not in the selectedFeatures list remove it
-//                it.remove();
-//            }
-//        }
-        return stats;
+    private FeatureStats initModel(Map<String, String[]> trainingDataset) {
+        //preprocess the given dataset
+        List<Document> dataset = FeatureExtraction.preprocessNaiveBayes(trainingDataset);
+        //produce the feature stats and select the best features
+        FeatureStats featureStats = FeatureExtraction.extractFeatureStats(dataset);
+        //intiliaze the naiveBayesModel of the classifier
+        naiveBayesModel = new NaiveBayesModel();
+        naiveBayesModel.n = featureStats.n; //number of observations
+        naiveBayesModel.f = featureStats.featureCategoryJointCount.size(); //number of features
+
+        // estimate the priors from the sample
+        naiveBayesModel.c = featureStats.categoryCounts.size(); //number of cateogries
+
+        naiveBayesModel.logPriors = new HashMap<String, Double>();
+        String category;
+        int count;
+        for (Map.Entry<String, Integer> entry : featureStats.categoryCounts.entrySet()) {
+            category = entry.getKey();
+            count = entry.getValue();
+            naiveBayesModel.logPriors.put(category, Math.log((double) count / naiveBayesModel.n));
+        }
+
+        return featureStats;
+
     }
 
     /**
      * Trains a Naive Bayes classifier by using the Multinomial Model by passing
-     * the trainingDataset and the prior probabilities.
+     * the trainingDataset.
      *
      * @param trainingDataset
-     * @param categoryPriors
-     * @throws IllegalArgumentException
      */
-    public void train(Map<String, String[]> trainingDataset, Map<String, Double> categoryPriors) throws IllegalArgumentException {
-//preprocess the given dataset
-        List<Document> dataset = FeatureExtraction.preprocessNaiveBayes(trainingDataset);
-//produce the feature stats and select the best features
-        FeatureStats featureStats = selectFeatures(dataset);
-//intiliaze the knowledgeBase of the classifier
-        knowledgeBase = new NaiveBayesModel();
-        knowledgeBase.n = featureStats.n; //number of observations
-        knowledgeBase.d = featureStats.featureCategoryJointCount.size(); //number of features
-//check is prior probabilities are given
-        if (categoryPriors == null) {
-//if not estimate the priors from the sample
-            knowledgeBase.c = featureStats.categoryCounts.size(); //number of cateogries
-            knowledgeBase.logPriors = new HashMap<String, Double>();
-            String category;
-            int count;
-            for (Map.Entry<String, Integer> entry : featureStats.categoryCounts.entrySet()) {
-                category = entry.getKey();
-                count = entry.getValue();
-                knowledgeBase.logPriors.put(category, Math.log((double) count / knowledgeBase.n));
-            }
-        } else {
-//if they are provided then use the given priors
-            knowledgeBase.c = categoryPriors.size();
-//make sure that the given priors are valid
-            if (knowledgeBase.c != featureStats.categoryCounts.size()) {
-                throw new IllegalArgumentException("Invalid priors Array: Make sure you pass a prior probability for every supported category.");
-            }
-            String category;
-            Double priorProbability;
-            for (Map.Entry<String, Double> entry : categoryPriors.entrySet()) {
-                category = entry.getKey();
-                priorProbability = entry.getValue();
-                if (priorProbability == null) {
-                    throw new IllegalArgumentException("Invalid priors Array: Make sure you pass a prior probability for every supported category.");
-                } else if (priorProbability < 0 || priorProbability > 1) {
-                    throw new IllegalArgumentException("Invalid priors Array: Prior probabilities should be between 0 and 1.");
-                }
-                knowledgeBase.logPriors.put(category, Math.log(priorProbability));
-            }
-        }
-//We are performing laplace smoothing (also known as add-1). This requires to estimate the total feature occurrences in each category
+    public void train(Map<String, String[]> trainingDataset) {
+
+        FeatureStats featureStats = this.initModel(trainingDataset);
+
+        //We are performing laplace smoothing (also known as add-1). This requires to estimate the total feature occurrences in each category
         Map<String, Double> featureOccurrencesInCategory = new HashMap<String, Double>();
         Integer occurrences;
         Double featureOccSum;
-        for (String category : knowledgeBase.logPriors.keySet()) {
+        for (String category : naiveBayesModel.logPriors.keySet()) {
             featureOccSum = 0.0;
             for (Map<String, Integer> categoryListOccurrences : featureStats.featureCategoryJointCount.values()) {
                 occurrences = categoryListOccurrences.get(category);
@@ -116,12 +77,13 @@ public class NaiveBayes {
             }
             featureOccurrencesInCategory.put(category, featureOccSum);
         }
-//estimate log likelihoods
+
+        //estimate log likelihoods
         String feature;
         Integer count;
         Map<String, Integer> featureCategoryCounts;
         double logLikelihood;
-        for (String category : knowledgeBase.logPriors.keySet()) {
+        for (String category : naiveBayesModel.logPriors.keySet()) {
             for (Map.Entry<String, Map<String, Integer>> entry : featureStats.featureCategoryJointCount.entrySet()) {
                 feature = entry.getKey();
                 featureCategoryCounts = entry.getValue();
@@ -129,24 +91,14 @@ public class NaiveBayes {
                 if (count == null) {
                     count = 0;
                 }
-                logLikelihood = Math.log((count + 1.0) / (featureOccurrencesInCategory.get(category) + knowledgeBase.d));
-                if (knowledgeBase.logLikelihoods.containsKey(feature) == false) {
-                    knowledgeBase.logLikelihoods.put(feature, new HashMap<String, Double>());
+                logLikelihood = Math.log((count + 1.0) / (featureOccurrencesInCategory.get(category) + naiveBayesModel.f));
+                if (naiveBayesModel.logLikelihoods.containsKey(feature) == false) {
+                    naiveBayesModel.logLikelihoods.put(feature, new HashMap<String, Double>());
                 }
-                knowledgeBase.logLikelihoods.get(feature).put(category, logLikelihood);
+                naiveBayesModel.logLikelihoods.get(feature).put(category, logLikelihood);
             }
         }
         featureOccurrencesInCategory = null;
-    }
-
-    /**
-     * Wrapper method of train() which enables the estimation of the prior
-     * probabilities based on the sample.
-     *
-     * @param trainingDataset
-     */
-    public void train(Map<String, String[]> trainingDataset) {
-        train(trainingDataset, null);
     }
 
     /**
@@ -158,7 +110,7 @@ public class NaiveBayes {
      * @throws IllegalArgumentException
      */
     public String test(String text) throws IllegalArgumentException {
-        if (knowledgeBase == null) {
+        if (naiveBayesModel == null) {
             throw new IllegalArgumentException("Knowledge Bases missing: Make sure you train first a classifier before you use it.");
         }
 //Tokenizes the text and creates a new document
@@ -170,17 +122,17 @@ public class NaiveBayes {
         String maxScoreCategory = null;
         Double maxScore = Double.NEGATIVE_INFINITY;
 //Map<String, Double> predictionScores = new HashMap<>();
-        for (Map.Entry<String, Double> entry1 : knowledgeBase.logPriors.entrySet()) {
+        for (Map.Entry<String, Double> entry1 : naiveBayesModel.logPriors.entrySet()) {
             category = entry1.getKey();
             logprob = entry1.getValue(); //intialize the scores with the priors
 //foreach feature of the document
             for (Map.Entry<String, Integer> entry2 : doc.tokens.entrySet()) {
                 feature = entry2.getKey();
-                if (!knowledgeBase.logLikelihoods.containsKey(feature)) {
+                if (!naiveBayesModel.logLikelihoods.containsKey(feature)) {
                     continue; //if the feature does not exist in the knowledge base skip it
                 }
                 occurrences = entry2.getValue(); //get its occurrences in text
-                logprob += occurrences * knowledgeBase.logLikelihoods.get(feature).get(category); //multiply loglikelihood score with occurrences
+                logprob += occurrences * naiveBayesModel.logLikelihoods.get(feature).get(category); //multiply loglikelihood score with occurrences
             }
 //predictionScores.put(category, logprob);
             if (logprob > maxScore) {

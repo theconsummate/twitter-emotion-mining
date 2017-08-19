@@ -20,7 +20,7 @@ public class NaiveBayesModel {
     /**
      * number of features
      */
-    public int d=0;
+    public int f=0;
 
     /**
      * log priors for log( P(c) )
