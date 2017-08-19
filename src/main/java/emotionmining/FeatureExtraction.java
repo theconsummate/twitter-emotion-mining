@@ -210,7 +210,7 @@ public class FeatureExtraction {
                         stems = Arrays.asList(parts[2].split(","));
                     }
                     else{
-                        System.out.print(tweet);
+                        System.out.print(tweet.getTweet());
                     }
                 }
             }
