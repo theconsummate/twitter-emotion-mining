@@ -209,9 +209,9 @@ public class FeatureExtraction {
                     if (parts.length > 2) {
                         stems = Arrays.asList(parts[2].split(","));
                     }
-                    else{
+                    /*else{
                         System.out.print(tweet.getTweet());
-                    }
+                    }*/
                 }
             }
             else {
