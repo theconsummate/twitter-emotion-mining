@@ -35,11 +35,11 @@ public class Main {
 //		evaluation(tweetsList);
 
 //		Naive Bayes Classifier.
-		NaiveBayesModel naiveBayesModel = naiveBayesTrain(tweetsList);
+//		NaiveBayesModel naiveBayesModel = naiveBayesTrain(tweetsList);
 //		corpus.setGoldFileName("data/train.csv");
 //		corpus.getEvaluationData();
 //		tweetsList = corpus.getTweetsList();
-		naiveBayesTest(naiveBayesModel, tweetsList);
+//		naiveBayesTest(naiveBayesModel, tweetsList);
 
 		/*Starting Percepotron training and Evaluation*/
 

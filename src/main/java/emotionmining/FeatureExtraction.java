@@ -205,7 +205,13 @@ public class FeatureExtraction {
 //                read from file
                 String line = reader.readLine();
                 if(line != null){
-                    stems = Arrays.asList(line.split(":::::::")[2].split(","));
+                    String[] parts = line.split(":::::::");
+                    if (parts.length > 2) {
+                        stems = Arrays.asList(parts[2].split(","));
+                    }
+                    else{
+                        System.out.print(tweet);
+                    }
                 }
             }
             else {
