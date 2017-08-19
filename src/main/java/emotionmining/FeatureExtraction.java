@@ -21,19 +21,11 @@ import java.util.*;
  * Created by dhruv on 27/05/17.
  */
 public class FeatureExtraction {
-    /**
-     * Generates a FeatureStats Object with metrics about he occurrences of the
-     * keywords in categories, the number of category counts and the total number
-     * of observations. These stats are used by the feature selection algorithm.
-     *
-     * @param dataset
-     * @return
-     */
 
     private static List<String> negationDictionary;
     private static Map<String, List<String>> nrcMap;
 
-    public FeatureStats extractFeatureStats(List<Document> dataset) {
+    public static FeatureStats extractFeatureStats(List<Document> dataset) {
         FeatureStats stats = new FeatureStats();
 
         Integer categoryCount;

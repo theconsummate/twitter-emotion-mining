@@ -153,7 +153,7 @@ public class Main {
 		nb.train(trainingExamples);
 
 		//get trained classifier knowledgeBase
-		NaiveBayesModel knowledgeBase = nb.getKnowledgeBase();
+		NaiveBayesModel knowledgeBase = nb.getNaiveBayesModel();
 		return knowledgeBase;
 	}
 
