@@ -44,20 +44,24 @@ public class Main {
 		/*Starting Percepotron training and Evaluation*/
 
 //		perceptron invocation
-		String modelfileName = "data/snowballStemModel_negation_nrc.csv";
-		String modelfileName1 = "data/stanfordStemModel_negation_nrc.csv";
+		String snowballModelFileName = "data/snowballStemModel_negation_nrc.csv";
+		String stanfordModelFileName = "data/stanfordStemModel_negation_nrc.csv";
 
         try {
-			System.out.println("Training Snowball model");
-			perceptronTrain(tweetsList, modelfileName);
-			System.out.println("Evaluating Snowball model");
+//			System.out.println("Training Snowball model");
+//			perceptronTrain(tweetsList, snowballModelFileName, false, true);
+//			System.out.println("Evaluating Snowball model");
 //			System.out.println("Computing features using snowball stemmer");
 //			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
-            perceptronTest(tweetsList, modelfileName);
-//			System.out.println("\n\nEvaluating Stanford model");
+//            perceptronTest(tweetsList, snowballModelFileName);
+
+
+			System.out.println("Training Stanford model");
+			perceptronTrain(tweetsList, stanfordModelFileName, true, true);
+			System.out.println("\n\nEvaluating Stanford model");
 //			System.out.println("Computing features using stanford parser");
 //			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv");
-//			perceptronTest(tweetsList, modelfileName1);
+			perceptronTest(tweetsList, stanfordModelFileName);
 		} catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,7 +192,7 @@ public class Main {
 		System.out.println("Macro-Accuracy: " + macroAccuracy / Labels.getSize());
 	}
 
-	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName) throws IOException {
+	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName, boolean useStanfordStemmer, boolean readFeaturesFromFile) throws IOException {
 		//Set Features for each Tweet
 		/*for (int i = 0; i < tweetsList.size(); i++) {
 			Tweet tweet = tweetsList.get(i);
@@ -197,9 +201,14 @@ public class Main {
 			featureVector.put("2", 0.3);
 			tweet.setFeatures(featureVector);
 		}*/
-        System.out.println("********* Extracting features *********");
-//        tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv");
-        tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv", true);
+
+		if(useStanfordStemmer) {
+			System.out.println("********* Extracting features using Stanford Stemmer *********");
+			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", readFeaturesFromFile);
+		} else {
+			System.out.println("********* Extracting features user Snowball Stemmer *********");
+			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv", readFeaturesFromFile);
+		}
 
         System.out.println("********* Starting tranining *********");
 
