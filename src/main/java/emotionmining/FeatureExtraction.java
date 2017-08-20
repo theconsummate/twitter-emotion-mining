@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class FeatureExtraction {
 
-    private static List<String> negationDictionary;
-    private static Map<String, List<String>> nrcMap;
+    private static List<String> negationDictionary = Corpus.getNegationDict();
+    private static Map<String, List<String>> nrcMap = Corpus.getNrcDict();
 
     public static FeatureStats extractFeatureStats(List<Document> dataset) {
         FeatureStats stats = new FeatureStats();
@@ -71,7 +71,7 @@ public class FeatureExtraction {
      * @param tweetsList
      * @return
      * */
-    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList, String filename) throws IOException {
+    public static List<Tweet> posTaggingAndStemming(List<Tweet> tweetsList, String filename, boolean readFromFile) throws IOException {
 
         LexicalizedParser lp = LexicalizedParser.loadModel("data/englishPCFG.ser.gz"); // Create new parser
         //lp.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"}); // set max sentence length if you want
@@ -82,25 +82,51 @@ public class FeatureExtraction {
         WordStemmer ls = new WordStemmer(); // stemmer/lemmatizer object
 
         // Read File Line By Line
-        FileWriter writer = new FileWriter(filename);
+        FileWriter writer  = null;
+        BufferedReader reader = null;
+
+        if(readFromFile){
+//            don't read from file, write new
+            reader = new BufferedReader(new FileReader(filename));
+            reader.read();
+        }
+        else {
+            writer = new FileWriter(filename);
+        }
         for(Tweet tweet: tweetsList) {
 //            System.out.println ("Processing: "+tweet.getTweet()); // print current line to console
             String text = preprocess(tweet.getTweet());
 //            System.out.println ("Tokenizing and Parsing: "+text); // print current line to console
 
-            // do all the standard java over-complication to use the stanford parser tokenizer
-            sr = new StringReader(text);
-            tkzr = PTBTokenizer.newPTBTokenizer(sr);
-            List toks = tkzr.tokenize();
+            List<String> stems = new ArrayList();
+            if(reader != null){
+//                read from file
+                String line = reader.readLine();
+                if(line != null){
+                    String[] parts = line.split(":::::::");
+                    if (parts.length > 2) {
+                        stems = Arrays.asList(parts[2].split(","));
+                    }
+                    /*else{
+                        System.out.print(tweet.getTweet());
+                    }*/
+                }
+            }
+            else {
+
+                // do all the standard java over-complication to use the stanford parser tokenizer
+                sr = new StringReader(text);
+                tkzr = PTBTokenizer.newPTBTokenizer(sr);
+                List toks = tkzr.tokenize();
 //            System.out.println ("tokens: "+toks);
 
-            Tree parse = (Tree) lp.apply(toks); // finally, we actually get to parse something
+                Tree parse = (Tree) lp.apply(toks); // finally, we actually get to parse something
 
-            // Output Option 1: Printing out various data by accessing it programmatically
+                // Output Option 1: Printing out various data by accessing it programmatically
 
-            // Get words, stemmed words and POS tags
+                // Get words, stemmed words and POS tags
 
-            ArrayList<String> stems = new ArrayList();
+
             /*ArrayList<String> words = new ArrayList();
             ArrayList<String> tags = new ArrayList();
 
@@ -110,10 +136,11 @@ public class FeatureExtraction {
                 tags.add(tw.tag());
             }*/
 
-            // Get stems
-            ls.visitTree(parse); // apply the stemmer to the tree
-            for (TaggedWord tw : parse.taggedYield()){
-                stems.add(tw.word());
+                // Get stems
+                ls.visitTree(parse); // apply the stemmer to the tree
+                for (TaggedWord tw : parse.taggedYield()) {
+                    stems.add(tw.word());
+                }
             }
 
             // Get dependency tree
@@ -148,17 +175,20 @@ public class FeatureExtraction {
             //tp.printTree(parse);
 
 
-            HashMap<String,Double> frequencymap = new HashMap<String,Double>();
+            Map<String,Double> featureVector = new HashMap<String,Double>();
             double sum = 0;
             String str = "";
             for(String a : stems) {
                 str += a + ",";
-                if(frequencymap.containsKey(a)) {
-                    frequencymap.put(a, frequencymap.get(a)+ (1/stems.size()) );
-                    sum += frequencymap.get(a);
+                if(featureVector.containsKey(a)) {
+                    featureVector.put(a, featureVector.get(a)+ (1/stems.size()) );
+                    sum += featureVector.get(a);
                 }
-                else{ frequencymap.put(a, (double) 1/stems.size()); sum += frequencymap.get(a);}
+                else{ featureVector.put(a, (double) 1/stems.size()); sum += featureVector.get(a);}
+                /*Other Features*/
+                featureVector = nrcEmotionFeatures(a, featureVector);
             }
+            featureVector = negationFeatures(text, featureVector);
 
 //            System.out.println("frequency map: "+frequencymap);
 //            System.out.println("frequency sum: "+sum);
@@ -168,11 +198,20 @@ public class FeatureExtraction {
             if (str != null && str.length() > 0) {
                 str = str.substring(0, str.length() - 1);
             }
-            writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
-            tweet.setFeatures(frequencymap);
+            if(writer != null) {
+                writer.append(tweet.getTweet() + ":::::::" + tweet.getGoldLabel() + ":::::::" + str + "\n");
+            }
+            tweet.setFeatures(featureVector);
+
+
         }
-        writer.flush();
-        writer.close();
+        if(writer != null) {
+            writer.flush();
+            writer.close();
+        }
+        if(reader != null){
+            reader.close();
+        }
         return tweetsList;
     }
 
@@ -183,8 +222,6 @@ public class FeatureExtraction {
      * @return
      */
     public static List<Tweet> snowballStemmer(List<Tweet> tweetsList, String filename, boolean readFromFile) throws IOException {
-        nrcMap = Corpus.getNrcDict();
-        negationDictionary = Corpus.getNegationDict();
         englishStemmer englishStemmer = new englishStemmer();
         FileWriter writer  = null;
         BufferedReader reader = null;
