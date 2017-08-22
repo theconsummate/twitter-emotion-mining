@@ -50,17 +50,18 @@ public class Main {
         try {
 //			System.out.println("Training Snowball model");
 //			perceptronTrain(tweetsList, snowballModelFileName, false, true);
-//			System.out.println("Evaluating Snowball model");
-//			System.out.println("Computing features using snowball stemmer");
-//			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
-//            perceptronTest(tweetsList, snowballModelFileName);
+			System.out.println("Evaluating Snowball model");
+			System.out.println("Computing features using snowball stemmer");
+			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
+            perceptronTest(tweetsList, snowballModelFileName);
 
 
-			System.out.println("Training Stanford model");
-			perceptronTrain(tweetsList, stanfordModelFileName, true, true);
+//			System.out.println("Training Stanford model");
+//			perceptronTrain(tweetsList, stanfordModelFileName, true, true);
 			System.out.println("\n\nEvaluating Stanford model");
-//			System.out.println("Computing features using stanford parser");
-//			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv");
+			System.out.println("Computing features using stanford parser");
+			tweetsList = corpus.getTweetsList();
+			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
 			perceptronTest(tweetsList, stanfordModelFileName);
 		} catch (IOException e) {
             e.printStackTrace();
