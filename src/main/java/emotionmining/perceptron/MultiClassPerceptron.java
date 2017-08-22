@@ -48,6 +48,9 @@ public class MultiClassPerceptron {
 				// Get the features for each instance (in form <FeatureName :
 				// FeatureValue>)
 				Map<String, Double> featureVector = tweetInstance.getFeatures();
+				if(featureVector == null){
+					continue;
+				}
 				// Get the weights for each instance (in form <Label:
 				// <FeatureName : FeatureValue>>)
 				weightVector = getWeightVecors(featureVector.keySet(), weightVector);
