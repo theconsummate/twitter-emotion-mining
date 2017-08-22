@@ -46,23 +46,33 @@ public class Main {
 //		perceptron invocation
 		String snowballModelFileName = "data/snowballStemModel_negation_nrc.csv";
 		String stanfordModelFileName = "data/stanfordStemModel_negation_nrc.csv";
+		String twokenizeModelFileName = "data/twokenizeModel_negation_nrc.csv";
 
         try {
 //			System.out.println("Training Snowball model");
-//			perceptronTrain(tweetsList, snowballModelFileName, false, true);
-			System.out.println("Evaluating Snowball model");
-			System.out.println("Computing features using snowball stemmer");
-			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
-            perceptronTest(tweetsList, snowballModelFileName);
+//			perceptronTrain(tweetsList, snowballModelFileName, 1, true);
+//			System.out.println("Evaluating Snowball model");
+//			System.out.println("Computing features using snowball stemmer");
+//			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
+//            perceptronTest(tweetsList, snowballModelFileName);
 
 
 //			System.out.println("Training Stanford model");
-//			perceptronTrain(tweetsList, stanfordModelFileName, true, true);
-			System.out.println("\n\nEvaluating Stanford model");
-			System.out.println("Computing features using stanford parser");
-			tweetsList = corpus.getTweetsList();
-			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
-			perceptronTest(tweetsList, stanfordModelFileName);
+//			perceptronTrain(tweetsList, stanfordModelFileName, 2, true);
+//			System.out.println("\n\nEvaluating Stanford model");
+//			System.out.println("Computing features using stanford parser");
+//			tweetsList = corpus.getTweetsList();
+//			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
+//			perceptronTest(tweetsList, stanfordModelFileName);
+
+			System.out.println("Training using Twokenize");
+			perceptronTrain(tweetsList, twokenizeModelFileName, 3, true);
+			System.out.println("\n\nEvaluating twokenize model");
+//			System.out.println("Computing features using stanford parser");
+//			tweetsList = corpus.getTweetsList();
+//			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
+			perceptronTest(tweetsList, twokenizeModelFileName);
+
 		} catch (IOException e) {
             e.printStackTrace();
         }
@@ -193,7 +203,7 @@ public class Main {
 		System.out.println("Macro-Accuracy: " + macroAccuracy / Labels.getSize());
 	}
 
-	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName, boolean useStanfordStemmer, boolean readFeaturesFromFile) throws IOException {
+	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName, int stemmerType, boolean readFeaturesFromFile) throws IOException {
 		//Set Features for each Tweet
 		/*for (int i = 0; i < tweetsList.size(); i++) {
 			Tweet tweet = tweetsList.get(i);
@@ -203,12 +213,17 @@ public class Main {
 			tweet.setFeatures(featureVector);
 		}*/
 
-		if(useStanfordStemmer) {
+		if(stemmerType == 1) {
 			System.out.println("********* Extracting features using Stanford Stemmer *********");
 			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", readFeaturesFromFile);
-		} else {
+		} else if(stemmerType == 2) {
 			System.out.println("********* Extracting features user Snowball Stemmer *********");
 			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv", readFeaturesFromFile);
+		}
+//		default is twokenize
+		else{
+			System.out.println("********* Extracting features user Twokenize *********");
+			tweetsList = FeatureExtraction.twokenizeLib(tweetsList);
 		}
 
         System.out.println("********* Starting tranining *********");
