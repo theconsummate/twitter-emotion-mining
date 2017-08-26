@@ -20,6 +20,9 @@ public class FeatureExtraction {
     private static List<String> negationDictionary = Corpus.getNegationDict();
     private static Map<String, List<String>> nrcMap = Corpus.getNrcDict();
 
+    public static boolean useNRCfeatures = false;
+    public static boolean useNegationfeatures = false;
+
     public static FeatureStats extractFeatureStats(List<Document> dataset) {
         FeatureStats stats = new FeatureStats();
 
@@ -327,15 +330,17 @@ public class FeatureExtraction {
     }
 
     private static Map<String, Double> nrcEmotionFeatures(String stem, Map<String, Double> featureVector){
-        if (nrcMap.containsKey(stem)) {
-            List<String> emotions = nrcMap.get(stem);
-            for (String emotion : emotions) {
-                String featureNameStr = "nrc-" + emotion.trim();
+        if(useNRCfeatures) {
+            if (nrcMap.containsKey(stem)) {
+                List<String> emotions = nrcMap.get(stem);
+                for (String emotion : emotions) {
+                    String featureNameStr = "nrc-" + emotion.trim();
 
-                if (featureVector.containsKey(featureNameStr))
-                    featureVector.put(featureNameStr, featureVector.get(featureNameStr) + 1.0);
-                else
-                    featureVector.put(featureNameStr, 1.0);
+                    if (featureVector.containsKey(featureNameStr))
+                        featureVector.put(featureNameStr, featureVector.get(featureNameStr) + 1.0);
+                    else
+                        featureVector.put(featureNameStr, 1.0);
+                }
             }
         }
         return featureVector;
@@ -348,10 +353,11 @@ public class FeatureExtraction {
      * @throws IOException
      */
     public static Map<String, Double> negationFeatures(String tweet, Map<String, Double> featureVector) throws IOException {
-
-        for (String negation : negationDictionary) {
-            if (tweet.contains(negation)) {
-                featureVector.put("negation", -1.0);
+        if(useNegationfeatures) {
+            for (String negation : negationDictionary) {
+                if (tweet.contains(negation)) {
+                    featureVector.put("negation", -1.0);
+                }
             }
         }
         return featureVector;

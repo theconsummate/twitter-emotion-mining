@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.cli.*;
+
 /**
  *         This is the class with main method. It outputs the TP, FP, FN
  *         Precision, Recall and FScore for each label. And it outputs the macro
@@ -21,7 +23,116 @@ import java.util.Map;
  */
 public class Main {
 
+//	private
+
+
 	public static void main(String args[]) {
+		Options options = initCLI(new Options());
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		String stemmer = "";
+		try {
+			cmd = parser.parse( options, args);
+
+			if(cmd.hasOption("h")){
+				help(options);
+			}
+			if(cmd.hasOption("s")){
+				stemmer = cmd.getOptionValue("c").toLowerCase();
+				if(stemmer.equals("stanford") || stemmer.equals("snowball") || stemmer.equals("twokenize")){
+// correct stemmer chosen, do nothing.
+				} else {
+					System.out.println("Please select a valid stemmer from STANFORD, SNOWBALL, TWOKENIZE");
+					help(options);
+				}
+			} else{
+				System.out.println("select a stemmer/tokeniser");
+				help(options);
+			}
+			if(cmd.hasOption("neg")){
+				System.out.println("Using Negations features");
+				FeatureExtraction.useNegationfeatures = true;
+			} else{
+				FeatureExtraction.useNegationfeatures = false;
+			}
+			if(cmd.hasOption("nrc")){
+				System.out.println("Using NRC features");
+				FeatureExtraction.useNRCfeatures = true;
+			} else{
+				FeatureExtraction.useNRCfeatures = false;
+			}
+
+			if(cmd.hasOption("tr")){
+//				training
+				if(cmd.hasOption("tf")){
+					if(cmd.hasOption("mf")){
+						System.out.println("Training using " + stemmer);
+						List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("tf"));
+						String modelFileName = cmd.getOptionValue("mf");
+						perceptronTrain(tweetsList, modelFileName , stemmer, true);
+						System.out.println("Training: Evaluating " + stemmer + " model");
+            			perceptronTest(tweetsList, modelFileName);
+					} else{
+						System.out.println("Model filename not given");
+						help(options);
+					}
+				} else{
+					System.out.println("training filename not given");
+					help(options);
+				}
+			}
+			if(cmd.hasOption("te")){
+				if(cmd.hasOption("df")){
+					if(cmd.hasOption("mf")){
+						System.out.println("Testing: Evaluating " + stemmer + " model");
+						System.out.println("Computing features using snowball stemmer");
+						List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("df"));
+						tweetsList = extractDevFeatures(tweetsList, stemmer);
+						perceptronTest(tweetsList, cmd.getOptionValue("mf"));
+					} else{
+						System.out.println("Model filename not give");
+						help(options);
+					}
+				} else {
+					System.out.println("Dev filename not give");
+					help(options);
+				}
+			}
+		} catch (ParseException e) {
+			help(options);
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
+	private static List<Tweet> getTweetList(String filename){
+		Corpus corpus = new Corpus();
+		corpus.setGoldFileName(filename);
+		corpus.getEvaluationData();
+		return corpus.getTweetsList();
+//		                .subList(0, 10);
+
+	}
+
+
+//	FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
+	private static List<Tweet> extractDevFeatures(List<Tweet> tweetsList, String stemmer) throws IOException {
+		if(stemmer.equals("stanford")){
+			return FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
+		} else if(stemmer.equals("snowball")){
+			return FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
+		} else if(stemmer.equals("twokenize")){
+			return FeatureExtraction.twokenizeLib(tweetsList);
+		}
+//		default case
+		return tweetsList;
+	}
+
+
+	public static void main111(String args[]) {
 		// Set the file names for the gold and predicted data.
 		Corpus corpus = new Corpus();
 //		corpus.setGoldFileName("data/dev.csv");
@@ -66,7 +177,7 @@ public class Main {
 //			perceptronTest(tweetsList, stanfordModelFileName);
 
 			System.out.println("Training using Twokenize");
-			perceptronTrain(tweetsList, twokenizeModelFileName, 3, true);
+			perceptronTrain(tweetsList, twokenizeModelFileName,"twokenize" , true);
 			System.out.println("\n\nEvaluating twokenize model");
 //			System.out.println("Computing features using stanford parser");
 //			tweetsList = corpus.getTweetsList();
@@ -81,6 +192,31 @@ public class Main {
 
 //		FeatureExtraction.snowballStemmer(tweetsList);
     }
+
+	private static Options initCLI(Options options){
+		options.addOption("h", "help", false, "show help.");
+		options.addOption("s", "stemmer", true, "Choose which stemmer to choose.");
+		options.addOption("neg", "negation", false, "use negation features");
+		options.addOption("nrc", "nrc", false, "use nrc features");
+		options.addOption("tr", "train", false, "train the model");
+		options.addOption("te", "test", false, "train the model");
+		options.addOption("mf", "model-file", true, "model file");
+		options.addOption("tf", "train-file", true, "training file");
+		options.addOption("df", "dev-file", true, "dev file");
+//		options.addOption("cs", "cached-stems", false, "use nrc features");
+
+		return options;
+	}
+
+	private static void help(Options options) {
+		// This prints out some help
+		HelpFormatter formater = new HelpFormatter();
+
+		formater.printHelp("Main", options);
+		System.exit(0);
+
+	}
+
 
 	public static void otherMain() throws IOException {
 		// Set the file names for the train data.
@@ -203,7 +339,7 @@ public class Main {
 		System.out.println("Macro-Accuracy: " + macroAccuracy / Labels.getSize());
 	}
 
-	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName, int stemmerType, boolean readFeaturesFromFile) throws IOException {
+	public static void perceptronTrain(List<Tweet> tweetsList, String modelfileName, String stemmerType, boolean readStemsFromFile) throws IOException {
 		//Set Features for each Tweet
 		/*for (int i = 0; i < tweetsList.size(); i++) {
 			Tweet tweet = tweetsList.get(i);
@@ -213,17 +349,20 @@ public class Main {
 			tweet.setFeatures(featureVector);
 		}*/
 
-		if(stemmerType == 1) {
+		if(stemmerType.equalsIgnoreCase("stanford")) {
 			System.out.println("********* Extracting features using Stanford Stemmer *********");
-			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", readFeaturesFromFile);
-		} else if(stemmerType == 2) {
+			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", readStemsFromFile);
+		} else if(stemmerType.equalsIgnoreCase("snowball")) {
 			System.out.println("********* Extracting features user Snowball Stemmer *********");
-			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv", readFeaturesFromFile);
+			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_train_stems.csv", readStemsFromFile);
 		}
-//		default is twokenize
-		else{
+		else if (stemmerType.equalsIgnoreCase("twokenize")){
 			System.out.println("********* Extracting features user Twokenize *********");
 			tweetsList = FeatureExtraction.twokenizeLib(tweetsList);
+		}
+		else{
+			System.out.println("No stemmer/tokeniser provided");
+			System.exit(0);
 		}
 
         System.out.println("********* Starting tranining *********");
