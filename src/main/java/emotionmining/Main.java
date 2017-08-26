@@ -38,7 +38,7 @@ public class Main {
 				help(options);
 			}
 			if(cmd.hasOption("s")){
-				stemmer = cmd.getOptionValue("c").toLowerCase();
+				stemmer = cmd.getOptionValue("s").toLowerCase();
 				if(stemmer.equals("stanford") || stemmer.equals("snowball") || stemmer.equals("twokenize")){
 // correct stemmer chosen, do nothing.
 				} else {
