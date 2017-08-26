@@ -111,6 +111,7 @@ public class Main {
 	private static List<Tweet> getTweetList(String filename){
 		Corpus corpus = new Corpus();
 		corpus.setGoldFileName(filename);
+		corpus.setPredictedFileName("data/dev-predicted.csv");
 		corpus.getEvaluationData();
 		return corpus.getTweetsList();
 //		                .subList(0, 10);
