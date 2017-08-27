@@ -85,7 +85,6 @@ public class Main {
 				if(cmd.hasOption("df")){
 					if(cmd.hasOption("mf")){
 						System.out.println("Testing: Evaluating " + stemmer + " model");
-						System.out.println("Computing features using snowball stemmer");
 						List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("df"));
 						tweetsList = extractDevFeatures(tweetsList, stemmer);
 						perceptronTest(tweetsList, cmd.getOptionValue("mf"));
