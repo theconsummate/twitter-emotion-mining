@@ -146,14 +146,22 @@ public class MultiClassPerceptron {
 		// Map<String, Double> adjWeightVector = new HashMap<String, Double>();
 		for (String feature : featureVector.keySet()) {
 			double w = 0;
-			if(weightVector != null){
-				if(feature == null){
-					System.out.println("feature is null");
+			try {
+				if (weightVector != null) {
+					if (feature == null) {
+						System.out.println("feature is null");
+					}
+					w = weightVector.get(feature);
+				} else {
+					System.out.println("weight vector was null");
+					weightVector = new HashMap<String, Double>();
 				}
-				w = weightVector.get(feature);
-			} else{
-				System.out.println("weight vector was null");
-				weightVector = new HashMap<String, Double>();
+			} catch (Exception e){
+				System.out.println("weight vector");
+				System.out.println(weightVector);
+				System.out.println("feature vector");
+				System.out.println(feature);
+				System.exit(0);
 			}
 			double x = featureVector.get(feature);
 			if (action) {
