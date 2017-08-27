@@ -146,7 +146,9 @@ public class MultiClassPerceptron {
 		// Map<String, Double> adjWeightVector = new HashMap<String, Double>();
 		for (String feature : featureVector.keySet()) {
 			double w = 0;
-			if(weightVector != null){
+			if(weightVector == null){
+				weightVector = new HashMap<String, Double>();
+			} else{
 				w = weightVector.get(feature);
 			}
 			double x = featureVector.get(feature);
