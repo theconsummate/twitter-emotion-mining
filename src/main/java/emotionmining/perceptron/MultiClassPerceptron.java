@@ -147,6 +147,9 @@ public class MultiClassPerceptron {
 		for (String feature : featureVector.keySet()) {
 			double w = 0;
 			if(weightVector != null){
+				if(feature == null){
+					System.out.println("feature is null");
+				}
 				w = weightVector.get(feature);
 			} else{
 				System.out.println("weight vector was null");
