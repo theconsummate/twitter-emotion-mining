@@ -150,11 +150,11 @@ public class MultiClassPerceptron {
 				if(weightVector.containsKey(feature)) {
 					w = weightVector.get(feature);
 				} else{
-					System.out.println("new key");
+//					System.out.println("new key");
 					weightVector.put(feature, 0.1);
 				}
 			} else {
-				System.out.println("weight vector was null");
+//				System.out.println("weight vector was null");
 				weightVector = new HashMap<String, Double>();
 				weightVector.put("0", 0.1);
 				weightVector.put(feature, 0.1);
