@@ -386,6 +386,10 @@ public class Main {
 		List<Tweet> listPredictedTweet = new ArrayList<Tweet>();
 		for (Tweet tweetInstance : tweetsList) {
 
+			if(tweetInstance.getFeatures() == null){
+				continue;
+			}
+
 			tweetInstance = perceptron.testModel(tweetInstance, weightMap);
 			listPredictedTweet.add(tweetInstance);
 		}
