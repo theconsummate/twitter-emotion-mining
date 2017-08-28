@@ -175,8 +175,8 @@ public class MultiClassPerceptron {
 	}
 
 	public Tweet testModel(Tweet tweetInstance, Map<String, Map<String, Double>> weightMap) {
-		Map<String, Double> featureVector = tweetInstance.getFeatures();
-		featureVector = putBiasInFeatureVector(featureVector);
+//		Map<String, Double> featureVector = tweetInstance.getFeatures();
+//		featureVector = putBiasInFeatureVector(featureVector);
 		tweetInstance = getWinningPerceptron(tweetInstance, weightMap);
 		return tweetInstance;
 	}
