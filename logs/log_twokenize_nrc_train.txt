@@ -1,0 +1,16 @@
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:run
+Training using Twokenize
+********* Extracting features user Twokenize *********
+********* Starting tranining *********
+********** Train The Model ***********
+
+
+Evaluating twokenize model
+:run FAILED
+
+BUILD FAILED
+
+Total time: 1 hrs 24 mins 34.415 secs
