@@ -1,0 +1,85 @@
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:run
+Training using snowball
+********* Extracting features user Snowball Stemmer *********
+********* Starting tranining *********
+********** Train The Model ***********
+Training: Evaluating snowball model
+Evaluation for Perceptron
+********* Outputting the evaluation results for HAPPY *********
+HAPPY		 TP: 448406	 FN: 172724	 FP: 75042	 TN: 527295
+		 Precision: 0.8566390548822423
+		 Recall: 0.7219197269492699
+		 FScore: 0.783530698650507
+		 Accuracy: 0.7974886122796937
+
+
+********* Outputting the evaluation results for SAD *********
+SAD		 TP: 129525	 FN: 37391	 FP: 32109	 TN: 1024442
+		 Precision: 0.8013474887709269
+		 Recall: 0.775989120276067
+		 FScore: 0.7884644650738092
+		 Accuracy: 0.9431942177435109
+
+
+********* Outputting the evaluation results for ANGER *********
+ANGER		 TP: 59938	 FN: 19200	 FP: 19360	 TN: 1124969
+		 Precision: 0.7558576508865293
+		 Recall: 0.7573858323435012
+		 FScore: 0.7566209699815699
+		 Accuracy: 0.9684830077149609
+
+
+********* Outputting the evaluation results for SURPRISE *********
+SURPRISE		 TP: 22953	 FN: 9154	 FP: 5882	 TN: 1185478
+		 Precision: 0.7960117912259407
+		 Recall: 0.7148908337745663
+		 FScore: 0.7532736044107512
+		 Accuracy: 0.9877103346473587
+
+
+********* Outputting the evaluation results for LOVE *********
+LOVE		 TP: 172959	 FN: 64485	 FP: 152122	 TN: 833901
+		 Precision: 0.5320489354960763
+		 Recall: 0.7284201748622833
+		 FScore: 0.6149380027554331
+		 Accuracy: 0.8229564017664555
+
+
+********* Outputting the evaluation results for DISGUST *********
+DISGUST		 TP: 1719	 FN: 811	 FP: 1002	 TN: 1219935
+		 Precision: 0.6317530319735392
+		 Recall: 0.6794466403162055
+		 FScore: 0.65473243191773
+		 Accuracy: 0.9985181455650214
+
+
+********* Outputting the evaluation results for TRUST *********
+TRUST		 TP: 1007	 FN: 1765	 FP: 676	 TN: 1220019
+		 Precision: 0.5983363042186571
+		 Recall: 0.36327561327561325
+		 FScore: 0.45207631874298543
+		 Accuracy: 0.9980048501512505
+
+
+********* Outputting the evaluation results for FEAR *********
+FEAR		 TP: 67762	 FN: 13668	 FP: 33005	 TN: 1109032
+		 Precision: 0.672462214812389
+		 Recall: 0.8321503131524008
+		 FScore: 0.7438322255580498
+		 Accuracy: 0.9618518521545738
+
+
+********* Outputting the macro/micro accuracy for all labels *********
+Macro-Precision: 0.7055570590332876
+Macro-Recall: 0.6966847818687383
+Macro-Fscore: 0.6934335896363545
+Macro-Accuracy: 0.9347759277528531
+
+BUILD SUCCESSFUL
+
+Total time: 28 mins 48.616 secs
+
+This build could be faster, please consider using the Gradle Daemon: https://docs.gradle.org/2.13/userguide/gradle_daemon.html
