@@ -84,7 +84,7 @@
   We were given crawled data set of twitter from different topics, emotions, demographics and time. Each twitter record in training data set more or less followed the structure consisting of labeled emotion, date and time, tweet id, username, language, tweet, retweet, and URL. The data was inconsistent in terms of certain fields. The labeled data set is preprocessed to remove junk information and to obtain a better-structured text. Following are the main steps applied as part of the pre-processing steps:
   
   \begin{itemize}
-  \item Tweet containing RT tag was the retweet (response) to the user who generated the tweet. We removed all these retweets to avoid biasness in results causing from repetitions of original tweet
+  \item Tweet containing RT tag was a retweet (response) to the user who generated the tweet. We removed all these retweets to avoid biasness in results causing from repetitions of original tweet
   \item Tweets containing @ symbol indicated the user of the tweet. We removed all the tags having @ as the user name does not play a role in correct classification.
   \item All the hashtags indicating emotion label in a tweet were removed from dataset to avoid biasness in classification.
   \item Url from each record was removed for training phase better prediction of labels on test data in classification.
@@ -92,14 +92,14 @@
   \item For training phase, we focused mainly on tweets in English. So we filtered out English tweets and removed the language column.
   \item We ignored date and time field for our training dataset.
   \item   Newline present in a tweet is replaced by empty string.
-  \item   Only tweet which was not empty after pre-processing steps was preceded.
+  \item   Only tweet which was not empty after pre-processing steps was used for training.
   \end{itemize}
   
   
   \subsection{Perceptron}
   
-  In this work, we use a supervised learning methods perceptron for multi-class classification. A Perceptron learning algorithm learns the weights for different features which account for the dimensions on hyperplane and helps in dividing the feature space. We implemented a multi-class perceptron with an idea to find one winning perceptron per class.
-    For each class label on the basis of the weights will be decided if the tweet belongs to that class or not. During training, we started with random initialization of weights with bias and adjusted it with getting of the features in order to handle the sparse data. The training process involves 200 epochs, where the weights improve with each epoch. During each iteration (epoch) we get a winning perceptron with highest value argmax-y, where we compute dot product for each class and chose one with the highest score, with
+  A Perceptron learning algorithm learns the weights for different features which account for the dimensions on a hyperplane and helps in dividing the feature space. We implemented a multi-class perceptron with an idea to find one winning perceptron per class.
+    During training, we started with random initialization of weights with a bias of 0.1 for each feature. We used a sparse representation so only those features which had non zero values were stored for a given tweet. The training process involved 100 epochs, where the weights improve with each epoch. During each iteration (epoch) we get a winning perceptron with highest value of argmax-y, where we compute dot product for each class and chose one with the highest score, with
     {$$arg max\textsubscript{i} = \sum\limits {i=1}^n f(x)\textsubscript{i} * w\textsubscript{i}$$}
   
   Where n is the number of features, f(x) is the feature vector and w is the weight vector. Considering the winning perceptron as predicted label for the instance in the iteration. We further adjusted the weights as explained in Algorithm 1.
