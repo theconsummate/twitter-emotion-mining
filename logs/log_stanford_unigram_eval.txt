@@ -1,0 +1,81 @@
+:compileJava UP-TO-DATE
+:processResources UP-TO-DATE
+:classes UP-TO-DATE
+:run
+Testing: Evaluating stanford model
+Evaluation for Perceptron
+********* Outputting the evaluation results for HAPPY *********
+HAPPY		 TP: 83594	 FN: 95890	 FP: 107125	 TN: 124470
+		 Precision: 0.43830976462754107
+		 Recall: 0.4657462503621493
+		 FScore: 0.45161168331969215
+		 Accuracy: 0.5061411553497016
+
+
+********* Outputting the evaluation results for SAD *********
+SAD		 TP: 10009	 FN: 66371	 FP: 42031	 TN: 292668
+		 Precision: 0.1923328209069946
+		 Recall: 0.13104215763288818
+		 FScore: 0.15587914655038154
+		 Accuracy: 0.7362988622624849
+
+
+********* Outputting the evaluation results for ANGER *********
+ANGER		 TP: 2748	 FN: 40212	 FP: 23617	 TN: 344502
+		 Precision: 0.10422909159871041
+		 Recall: 0.06396648044692738
+		 FScore: 0.07927875946628202
+		 Accuracy: 0.8447281422792212
+
+
+********* Outputting the evaluation results for SURPRISE *********
+SURPRISE		 TP: 404	 FN: 12698	 FP: 12040	 TN: 385937
+		 Precision: 0.03246544519447123
+		 Recall: 0.0308349870248817
+		 FScore: 0.031629217881468726
+		 Accuracy: 0.9398217860800478
+
+
+********* Outputting the evaluation results for LOVE *********
+LOVE		 TP: 15439	 FN: 50689	 FP: 79423	 TN: 265528
+		 Precision: 0.162752208471253
+		 Recall: 0.23347144931042826
+		 FScore: 0.19180073296478045
+		 Accuracy: 0.6834866290907587
+
+
+********* Outputting the evaluation results for DISGUST *********
+DISGUST		 TP: 9	 FN: 1181	 FP: 1436	 TN: 408453
+		 Precision: 0.006228373702422145
+		 Recall: 0.007563025210084034
+		 FScore: 0.00683111954459203
+		 Accuracy: 0.9936338270746012
+
+
+********* Outputting the evaluation results for TRUST *********
+TRUST		 TP: 0	 FN: 757	 FP: 1553	 TN: 408769
+		 Precision: 0.0
+		 Recall: 0.0
+		 FScore: 0.0
+		 Accuracy: 0.9943806421636717
+
+
+********* Outputting the evaluation results for FEAR *********
+FEAR		 TP: 2381	 FN: 28697	 FP: 29270	 TN: 350731
+		 Precision: 0.07522669109980727
+		 Recall: 0.07661368170409937
+		 FScore: 0.07591385164756333
+		 Accuracy: 0.8589881750223193
+
+
+********* Outputting the macro/micro accuracy for all labels *********
+Macro-Precision: 0.12644304945014997
+Macro-Recall: 0.12615475396143228
+Macro-Fscore: 0.12411806392184503
+Macro-Accuracy: 0.819684902415351
+
+BUILD SUCCESSFUL
+
+Total time: 31.244 secs
+
+This build could be faster, please consider using the Gradle Daemon: https://docs.gradle.org/2.13/userguide/gradle_daemon.html
