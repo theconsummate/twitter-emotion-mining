@@ -261,6 +261,7 @@ words needs to be formulated in a better way to maximize the learning efficiency
 
 
 -------------------------------------------------------------
+
 \begin{table*}[t]
 \small
   \centering
@@ -268,15 +269,15 @@ words needs to be formulated in a better way to maximize the learning efficiency
 \hline
 \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC 
  \\ \hline
-\bf Happy &  &  &  &  \\ \hline
-\bf Sad &  &  &  &   \\ \hline
-\bf Anger &  &  &  & \\ \hline
-\bf Surprise &  &  &  &  \\ \hline
-\bf Disgust &  &  &  &    \\ \hline
-\bf Fear &  &  &  &  \\ \hline
-\bf Love &  &  &  &  \\ \hline
-\bf Trust &  &  & 1 & 1\\ \hline
-\bf Macro F-score &  &  &  & \\ \hline
+\bf Happy & 0.78 & 0.8 & 0.78 & 0.70 \\ \hline
+\bf Sad & 0.78 & 0.69 & 0.70 & 0.64  \\ \hline
+\bf Anger & 0.75 & 0.63 & 0.66 & 0.66 \\ \hline
+\bf Surprise & 0.75 & 0.67 & 0.52 & 0.57 \\ \hline
+\bf Disgust & 0.65 & 0.59 & 0.46 & 0.42  \\ \hline
+\bf Fear & 0.74 & 0.64 & 0.65 & 0.66 \\ \hline
+\bf Love & 0.61 & 0.57 & 0.46 & 0.56 \\ \hline
+\bf Trust & 0.45 & 0.37 & 0.27 & 0.24 \\ \hline
+\bf Macro F-score & 0.69 & 0.62 & 0.56 & 0.56 \\ \hline
 \end{tabular}
   \caption{  F-Score per category using Snowball Stemmer(training set) }
   \label{tab:1}
@@ -290,15 +291,15 @@ words needs to be formulated in a better way to maximize the learning efficiency
 \hline
 \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC 
  \\ \hline
-\bf Happy &  &  &  &  \\ \hline
-\bf Sad &  &  &  &   \\ \hline
-\bf Anger &  &  &  & \\ \hline
-\bf Surprise &  &  &  &  \\ \hline
-\bf Disgust &  &  &  &    \\ \hline
-\bf Fear &  &  &  &  \\ \hline
-\bf Love &  &  &  &  \\ \hline
-\bf Trust &  &  & 1 & 1\\ \hline
-\bf Macro F-score &  &  &  & \\ \hline
+\bf Happy & 0.67 & 0.72 & 0.77 & 0.41 \\ \hline
+\bf Sad & 0.63 & 0.70 & 0.72 & 0.18  \\ \hline
+\bf Anger & 0.63 & 0.67 & 0.70 & 0.03 \\ \hline
+\bf Surprise & 0.38 & 0.42 & 0.49 & 0.01 \\ \hline
+\bf Disgust & 0.25 & 0.32 & 0.45 & 0.0   \\ \hline
+\bf Fear & 0.57 & 0.63 & 0.66 & 0.02 \\ \hline
+\bf Love & 0.44 & 0.48 & 0.46 & 0.11 \\ \hline
+\bf Trust & 0.14 & 0.14 & 0.20 & 0.0 \\ \hline
+\bf Macro F-score & 0.46 & 0.51 & 0.56 & 0.1 \\ \hline
 \end{tabular}
   \caption{  F-Score per category using Snowball Stemmer(test set)}
   \label{tab:1}
@@ -313,15 +314,15 @@ words needs to be formulated in a better way to maximize the learning efficiency
 \hline
 \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC 
  \\ \hline
-\bf Happy &  &  &  &  \\ \hline
-\bf Sad &  &  &  &   \\ \hline
-\bf Anger &  &  &  & \\ \hline
-\bf Surprise &  &  &  &  \\ \hline
-\bf Disgust &  &  &  &    \\ \hline
-\bf Fear &  &  &  &  \\ \hline
-\bf Love &  &  &  &  \\ \hline
-\bf Trust &  &  & 1 & 1\\ \hline
-\bf Macro F-score &  &  &  & \\ \hline
+\bf Happy & 0.79 & 0.77 & 0.59 & 0.64 \\ \hline
+\bf Sad & 0.77 & 0.62 & 0.69 & 0.69  \\ \hline
+\bf Anger & 0.69 & 0.72 & 0.63 & 0.61\\ \hline
+\bf Surprise & 0.75 & 0.62 & 0.60 & 0.53 \\ \hline
+\bf Disgust & 0.60 & 0.53 & 0.51 & 0.44   \\ \hline
+\bf Fear & 0.77 & 0.60 & 0.65 & 0.60 \\ \hline
+\bf Love & 0.61 & 0.56 & 0.51 & 0.53 \\ \hline
+\bf Trust & 0.49 & 0.30 & 0.21 &0.21 \\ \hline
+\bf Macro F-score & 0.69  & 0.59  & 0.53  & 0.53 \\ \hline
 \end{tabular}
   \caption{  F-Score per category using Standford Stemmer (training set) }
   \label{tab:1}
@@ -334,15 +335,15 @@ words needs to be formulated in a better way to maximize the learning efficiency
 \hline
 \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC 
  \\ \hline
-\bf Happy &  &  &  &  \\ \hline
-\bf Sad &  &  &  &   \\ \hline
-\bf Anger &  &  &  & \\ \hline
-\bf Surprise &  &  &  &  \\ \hline
-\bf Disgust &  &  &  &    \\ \hline
-\bf Fear &  &  &  &  \\ \hline
-\bf Love &  &  &  &  \\ \hline
-\bf Trust &  &  & 1 & 1\\ \hline
-\bf Macro F-score &  &  &  & \\ \hline
+\bf Happy & 0.45 & 0.45 & 0.48 & 0.41 \\ \hline
+\bf Sad & 0.15 & 0.15 & 0.15 & 0.18  \\ \hline
+\bf Anger & 0.07 & 0.07 & 0.08 & 0.03\\ \hline
+\bf Surprise & 0.03 & 0.03 & 0.03 & 0.01 \\ \hline
+\bf Disgust & 0.01 & 0.01 & 0.0 & 0.0   \\ \hline
+\bf Fear & 0.07 & 0.07 & 0.07 & 0.02 \\ \hline
+\bf Love & 0.19 & 0.18 & 0.15 & 0.11 \\ \hline
+\bf Trust & 0.0 & 0.0 & 0.0 &0.0\\ \hline
+\bf Macro F-score & 0.12 & 0.12 & 0.12 & 0.1\\ \hline
 \end{tabular}
   \caption{   F-Score per category using Standford Stemmer (test set) }
   \label{tab:1}
