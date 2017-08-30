@@ -128,6 +128,7 @@
   predicted label.\\
   
   \subsection{Naive Bayes}
+   To benchmark the performance of Perceptron, we also decided to implement a simple Multinomial Naive Bayes model where we just calculate the conditional probabilities and make a prediction. Multinomial Naive Bayes is usually used when the frequency of occurences of the words matter a lot in the classification problem. In our work, this happens to be true because if a particular word, say for example "happy", occures many times in a single tweet, it is very likely that the emotion for that particular tweet is going to be "happy". This is different from the Binarized Multinomial Naive Bayes where the mere presence of the word is enough and its relative frequency is not taken into account. This model is likely to prove inferior to Multinomial Naive Bayes in the context of our work and thus was not implemented.
   
   
   
@@ -365,54 +366,24 @@
   \begin{table*}[t]
   
     \centering
-  \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
+  \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
-  \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC
+  \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Training & \bf Testing
   \\ \hline
-  \bf Happy & & & & \\ \hline
-  \bf Sad & & & & \\ \hline
-  \bf Anger & & & & \\ \hline
-  \bf Surprise & & & & \\ \hline
-  \bf Disgust & & & & \\ \hline
-  \bf Fear & & & & \\ \hline
-  \bf Love & & & & \\ \hline
-  \bf Trust & & & 1 & 1\\ \hline
-  \bf Macro F-score & & & & \\ \hline
+  \bf Happy & 0.80 & 0.73 \\ \hline
+  \bf Sad & 0.72 & 0.65 \\ \hline
+  \bf Anger & 0.57 & 0.44 \\ \hline
+  \bf Surprise & 0.38 & 0.17 \\ \hline
+  \bf Disgust & 0.25 & 0.0 \\ \hline
+  \bf Fear & 0.62 & 0.47 \\ \hline
+  \bf Love & 0.62 & 0.39 \\ \hline
+  \bf Trust & 0.0 & 0.0 \\ \hline
+  \bf Macro F-score & 0.48 & 0.36 \\ \hline
   \end{tabular}
-    \caption{ F-Score with Naive Bayes per category (training set) }
+    \caption{ F-Score with Naive Bayes per category on training and testing set }
     \label{tab:1}
   \end{table*}
 
-  
-  
-  \begin{table*}[t]
-  
-    \centering
-  \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
-  \hline
-  \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Ngrams & \bf Ngrams+ Negation & \bf Ngram+NRC & \bf Ngram+ Negation+ NRC
-  \\ \hline
-  \bf Happy & & & & \\ \hline
-  \bf Sad & & & & \\ \hline
-  \bf Anger & & & & \\ \hline
-  \bf Surprise & & & & \\ \hline
-  \bf Disgust & & & & \\ \hline
-  \bf Fear & & & & \\ \hline
-  \bf Love & & & & \\ \hline
-  \bf Trust & & & 1 & 1\\ \hline
-  \bf Macro F-score & & & & \\ \hline
-  \end{tabular}
-    \caption{ F-Score with Naive Bayes per category (test set) }
-    \label{tab:1}
-  \end{table*}
- 
-  
-  
-  
-  
-  
-  
-  
   
   
   % include your own bib file like this:
