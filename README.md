@@ -1,8 +1,42 @@
 # twitter-emotion-mining
 
-# Team LAB nlp. Twitter mining
+## How to run
+### Build
+The project uses gradle as the build system. Install gradle and run ``gradle build``.
 
-# Progress report
+### Arguments
+```
+The program takes following arguments:
+usage: Main
+ -cs,--cached-stems               use cached stems
+ -csf,--cached-stems-file <arg>   file to read/write cache stems
+ -df,--dev-file <arg>             dev file
+ -h,--help                        show help.
+ -mf,--model-file <arg>           model file
+ -neg,--negation                  use negation features
+ -nrc,--nrc                       use nrc features
+ -s,--stemmer <arg>               Choose which stemmer to choose.
+ -te,--test                       train the model
+ -tf,--train-file <arg>           training file
+ -tr,--train                      train the model
+```
+
+
+The project can be executed by compiling into a jar file or directly through Gradle. The following steps show the use of gradle
+```bash
+gradle run -PappArgs="['arg1', 'arg2']"
+```
+
+### Sample commands
+#### Training a Perceptron with Snowball stemmer and unigram features
+```
+gradle run -PappArgs="['-s', 'snowball', '--train', '-tf', 'data/train.csv', '-mf', 'data/snowballModel.csv', '-csf', 'data/snowballStems']"
+```
+
+#### Training and Testing Naive Bayes
+```
+gradle run -PappArgs="['-s', 'naivebayes', '--train', '-tf', 'data/train.csv', '-df', 'data/dev.csv', '-mf', 'data/naivebayes.csv']"
+```
 
 **Emotion Analysis:** Looking into ways people express their emotion using text
 
