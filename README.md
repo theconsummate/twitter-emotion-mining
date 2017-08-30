@@ -5,7 +5,11 @@
 The project uses gradle as the build system. Install gradle and run ``gradle build``.
 
 ### Arguments
-```
+The project can be executed by compiling into a jar file or directly through Gradle. The following steps show the use of gradle
+```bash
+gradle run -PappArgs="['arg1', 'arg2']"
+
+
 The program takes following arguments:
 usage: Main
  -cs,--cached-stems               use cached stems
@@ -21,13 +25,7 @@ usage: Main
  -tr,--train                      train the model
 ```
 
-
-The project can be executed by compiling into a jar file or directly through Gradle. The following steps show the use of gradle
-```bash
-gradle run -PappArgs="['arg1', 'arg2']"
-```
-
-### Sample commands
+### Sample commands for different use cases
 #### Training a Perceptron with Snowball stemmer and unigram features
 ```
 gradle run -PappArgs="['-s', 'snowball', '--train', '-tf', 'data/train.csv', '-mf', 'data/snowballModel.csv', '-csf', 'data/snowballStems']"
