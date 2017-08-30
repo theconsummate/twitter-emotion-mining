@@ -31,11 +31,15 @@ public class Main {
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		String stemmer = "";
+		boolean useCachedStems = false;
 		try {
 			cmd = parser.parse( options, args);
 
 			if(cmd.hasOption("h")){
 				help(options);
+			}
+			if(cmd.hasOption("cs")){
+				useCachedStems = true;
 			}
 			if(cmd.hasOption("s")){
 				stemmer = cmd.getOptionValue("s").toLowerCase();
@@ -73,7 +77,7 @@ public class Main {
 							System.out.println("Training using " + stemmer);
 							List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("tf"));
 							String modelFileName = cmd.getOptionValue("mf");
-							perceptronTrain(tweetsList, modelFileName, stemmer, true);
+							perceptronTrain(tweetsList, modelFileName, stemmer, useCachedStems);
 							System.out.println("Training: Evaluating " + stemmer + " model");
 							perceptronTest(tweetsList, modelFileName);
 						}
@@ -89,10 +93,15 @@ public class Main {
 			if(cmd.hasOption("te")){
 				if(cmd.hasOption("df")){
 					if(cmd.hasOption("mf")){
-						System.out.println("Testing: Evaluating " + stemmer + " model");
-						List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("df"));
-						tweetsList = extractDevFeatures(tweetsList, stemmer);
-						perceptronTest(tweetsList, cmd.getOptionValue("mf"));
+						if(cmd.hasOption("csf")) {
+							System.out.println("Testing: Evaluating " + stemmer + " model");
+							List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("df"));
+							tweetsList = extractDevFeatures(tweetsList, stemmer, cmd.getOptionValue("csf"), useCachedStems);
+							perceptronTest(tweetsList, cmd.getOptionValue("mf"));
+						} else {
+							System.out.println("filename not provided for caching stems");
+							help(options);
+						}
 					} else{
 						System.out.println("Model filename not give");
 						help(options);
@@ -124,11 +133,13 @@ public class Main {
 
 
 //	FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
-	private static List<Tweet> extractDevFeatures(List<Tweet> tweetsList, String stemmer) throws IOException {
+	private static List<Tweet> extractDevFeatures(List<Tweet> tweetsList, String stemmer, String stemCacheFilename, boolean usecachedStems) throws IOException {
+//		"data/stanford_train_stems.csv"
+//		"data/snowball_dev_stems.csv"
 		if(stemmer.equals("stanford")){
-			return FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
+			return FeatureExtraction.posTaggingAndStemming(tweetsList, stemCacheFilename, usecachedStems);
 		} else if(stemmer.equals("snowball")){
-			return FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
+			return FeatureExtraction.snowballStemmer(tweetsList, stemCacheFilename, usecachedStems);
 		} else if(stemmer.equals("twokenize")){
 			return FeatureExtraction.twokenizeLib(tweetsList);
 		}
@@ -156,67 +167,6 @@ public class Main {
 	}
 
 
-	public static void main111(String args[]) {
-		// Set the file names for the gold and predicted data.
-		Corpus corpus = new Corpus();
-//		corpus.setGoldFileName("data/dev.csv");
-		corpus.setGoldFileName("data/train.csv");
-		corpus.setPredictedFileName("data/dev-predicted.csv");
-		// Get tweets list with their given gold and predicted labels.
-		corpus.getEvaluationData();
-		List<Tweet> tweetsList = corpus.getTweetsList();
-//                .subList(0, 10);
-
-//		evaluation(tweetsList);
-
-//		Naive Bayes Classifier.
-//		NaiveBayesModel naiveBayesModel = naiveBayesTrain(tweetsList);
-//		corpus.setGoldFileName("data/train.csv");
-//		corpus.getEvaluationData();
-//		tweetsList = corpus.getTweetsList();
-//		naiveBayesTest(naiveBayesModel, tweetsList);
-
-		/*Starting Percepotron training and Evaluation*/
-
-//		perceptron invocation
-		String snowballModelFileName = "data/snowballStemModel_negation_nrc.csv";
-		String stanfordModelFileName = "data/stanfordStemModel_negation_nrc.csv";
-		String twokenizeModelFileName = "data/twokenizeModel_negation_nrc.csv";
-
-        try {
-//			System.out.println("Training Snowball model");
-//			perceptronTrain(tweetsList, snowballModelFileName, 1, true);
-//			System.out.println("Evaluating Snowball model");
-//			System.out.println("Computing features using snowball stemmer");
-//			tweetsList = FeatureExtraction.snowballStemmer(tweetsList, "data/snowball_dev_stems.csv", true);
-//            perceptronTest(tweetsList, snowballModelFileName);
-
-
-//			System.out.println("Training Stanford model");
-//			perceptronTrain(tweetsList, stanfordModelFileName, 2, true);
-//			System.out.println("\n\nEvaluating Stanford model");
-//			System.out.println("Computing features using stanford parser");
-//			tweetsList = corpus.getTweetsList();
-//			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
-//			perceptronTest(tweetsList, stanfordModelFileName);
-
-			System.out.println("Training using Twokenize");
-			perceptronTrain(tweetsList, twokenizeModelFileName,"twokenize" , true);
-			System.out.println("\n\nEvaluating twokenize model");
-//			System.out.println("Computing features using stanford parser");
-//			tweetsList = corpus.getTweetsList();
-//			tweetsList = FeatureExtraction.posTaggingAndStemming(tweetsList, "data/stanford_train_stems.csv", true);
-			perceptronTest(tweetsList, twokenizeModelFileName);
-
-		} catch (IOException e) {
-            e.printStackTrace();
-        }
-
-//        FeatureExtraction.posTaggingAndStemming(tweetsList);
-
-//		FeatureExtraction.snowballStemmer(tweetsList);
-    }
-
 	private static Options initCLI(Options options){
 		options.addOption("h", "help", false, "show help.");
 		options.addOption("s", "stemmer", true, "Choose which stemmer to choose.");
@@ -227,8 +177,8 @@ public class Main {
 		options.addOption("mf", "model-file", true, "model file");
 		options.addOption("tf", "train-file", true, "training file");
 		options.addOption("df", "dev-file", true, "dev file");
-//		options.addOption("cs", "cached-stems", false, "use nrc features");
-
+		options.addOption("cs", "cached-stems", false, "use cached stems");
+		options.addOption("csf", "cached-stems-file", true, "file to read/write cache stems");
 		return options;
 	}
 
@@ -238,34 +188,6 @@ public class Main {
 
 		formater.printHelp("Main", options);
 		System.exit(0);
-
-	}
-
-
-	public static void otherMain() throws IOException {
-		// Set the file names for the train data.
-		Corpus corpus = new Corpus();
-		corpus.setGoldFileName("train.csv");
-		// Get data for train
-		corpus.getEvaluationData();
-		// Get tweets list with their given gold label.
-		List<Tweet> tweetsList = corpus.getTweetsList();
-
-		//List<String> tID = new ArrayList<String>();
-
-		// Set Features for each Tweet
-
-			//System.out.println("\n");
-
-			/*
-			 * Map<String, Double> featureVector = new HashMap<String,
-			 * Double>(); featureVector.put("1", 0.2);
-			 * tweet.setFeatures(featureVector);
-			 */
-
-
-		// Call the perceptron for training
-//		perceptronTrain(tweetsList, "filename");
 
 	}
 
