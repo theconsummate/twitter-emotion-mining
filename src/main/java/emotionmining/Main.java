@@ -138,11 +138,15 @@ public class Main {
 
 	public static void runNaiveBayes(String trainfile, String devfile){
 //		Naive Bayes Classifier.
+		System.out.println(trainfile);
+		System.out.println(devfile);
+
 		Corpus corpus = new Corpus();
 //		corpus.setGoldFileName("data/dev.csv");
 		corpus.setGoldFileName(trainfile);
 		corpus.getEvaluationData();
 		List<Tweet> tweetsList = corpus.getTweetsList();
+		System.out.println("Training model");
 		NaiveBayesModel naiveBayesModel = naiveBayesTrain(tweetsList);
 		System.out.println("evaluating model on training data");
 		naiveBayesTest(naiveBayesModel, tweetsList);
