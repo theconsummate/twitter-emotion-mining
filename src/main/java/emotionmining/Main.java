@@ -39,7 +39,8 @@ public class Main {
 			}
 			if(cmd.hasOption("s")){
 				stemmer = cmd.getOptionValue("s").toLowerCase();
-				if(stemmer.equals("stanford") || stemmer.equals("snowball") || stemmer.equals("twokenize")){
+				if(stemmer.equals("stanford") || stemmer.equals("snowball")
+						|| stemmer.equals("twokenize") || stemmer.equals("naivebayes")){
 // correct stemmer chosen, do nothing.
 				} else {
 					System.out.println("Please select a valid stemmer from STANFORD, SNOWBALL, TWOKENIZE");
@@ -66,12 +67,16 @@ public class Main {
 //				training
 				if(cmd.hasOption("tf")){
 					if(cmd.hasOption("mf")){
-						System.out.println("Training using " + stemmer);
-						List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("tf"));
-						String modelFileName = cmd.getOptionValue("mf");
-						perceptronTrain(tweetsList, modelFileName , stemmer, true);
-						System.out.println("Training: Evaluating " + stemmer + " model");
-            			perceptronTest(tweetsList, modelFileName);
+						if(stemmer.equalsIgnoreCase("naivebayes")){
+							runNaiveBayes(cmd.getOptionValue("tf"), cmd.getOptionValue("df"));
+						} else {
+							System.out.println("Training using " + stemmer);
+							List<Tweet> tweetsList = getTweetList(cmd.getOptionValue("tf"));
+							String modelFileName = cmd.getOptionValue("mf");
+							perceptronTrain(tweetsList, modelFileName, stemmer, true);
+							System.out.println("Training: Evaluating " + stemmer + " model");
+							perceptronTest(tweetsList, modelFileName);
+						}
 					} else{
 						System.out.println("Model filename not given");
 						help(options);
@@ -129,6 +134,23 @@ public class Main {
 		}
 //		default case
 		return tweetsList;
+	}
+
+	public static void runNaiveBayes(String trainfile, String devfile){
+//		Naive Bayes Classifier.
+		Corpus corpus = new Corpus();
+//		corpus.setGoldFileName("data/dev.csv");
+		corpus.setGoldFileName(trainfile);
+		corpus.getEvaluationData();
+		List<Tweet> tweetsList = corpus.getTweetsList();
+		NaiveBayesModel naiveBayesModel = naiveBayesTrain(tweetsList);
+		System.out.println("evaluating model on training data");
+		naiveBayesTest(naiveBayesModel, tweetsList);
+		corpus.setGoldFileName(devfile);
+		corpus.getEvaluationData();
+		tweetsList = corpus.getTweetsList();
+		System.out.println("evaluating model on testing data");
+		naiveBayesTest(naiveBayesModel, tweetsList);
 	}
 
 
