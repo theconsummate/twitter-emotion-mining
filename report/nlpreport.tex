@@ -234,13 +234,28 @@
   
   \subsection{Result}
   
-  Best performance for the system was attained when the combination of features Ngram + ... were used. We used statistical measures of accuracy,
-  precision, recall, and F-score for emotions in our model. We are interested in showing micro and macro F-score for each individual emotion with
-  various feature combinations.
+  Best performance for the system was attained when the combination of features Ngram + Negations were used for snowball stemmer.
+  For standord parser best performance is observed with Ngram feature. We used statistical measures of accuracy, precision, recall, and F-score for each emotion in our model. We are interested in showing micro and macro F-score for each individual emotion with  various feature combinations.
+  
+   
+  From table 2. it can be seen that for training set best macro F score was observed with Ngrams feature with snowball stemmer. Micro F score is observed highest for happy emotion with Ngram+Negation feature. 
+  
+  From table 3. for test set, best macro F score value is for Ngram +  NRC feature (0.56). Micro F score is best for happy with same feature (0.77).
+  
+  From table 3. it can be seen that for training set best macro F score was observed with Ngrams + Negagtion feature with stadford stemmer(0.59). Micro F score is observed highest for happy emotion with Ngram feature (0.79). 
+  
+  From table 4. it can be seen that for test set  macro F score was observed equally same with all features. Micro F score is observed highest for happy emotion with Ngram+NRC feature (0.48) that is less than previous observations.
+  
+  
+   
+  
+  
+  
   Typical features that we considered in corresponding results for all eight
   emotions and their micro and macro F-score are given in the table.
   
   However poor performance was observed for some classes compared to other, which is why we conducted an error analysis study on the obtained result.
+  
   
   \section{Future Work}
   
@@ -258,10 +273,9 @@
   
   
   
-  -------------------------------------------------------------
-  
+
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -280,10 +294,10 @@
     \caption{ F-Score per category using Snowball Stemmer(training set) }
     \label{tab:1}
   \end{table*}
-  -----------------
+  
   
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -302,11 +316,12 @@
     \caption{ F-Score per category using Snowball Stemmer(test set)}
     \label{tab:1}
   \end{table*}
-  -------------------------------------------------------------
+ 
+
   
   
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -325,9 +340,9 @@
     \caption{ F-Score per category using Standford Stemmer (training set) }
     \label{tab:1}
   \end{table*}
-  =======================================================
+
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -346,9 +361,9 @@
     \caption{ F-Score per category using Standford Stemmer (test set) }
     \label{tab:1}
   \end{table*}
-  ========================================================
+ 
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -367,11 +382,11 @@
     \caption{ F-Score with Naive Bayes per category (training set) }
     \label{tab:1}
   \end{table*}
-  ------------------------------------------------------------
+
   
   
   \begin{table*}[t]
-  \small
+  
     \centering
   \begin{tabular}{|l|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}|p{2 cm}}
   \hline
@@ -390,24 +405,9 @@
     \caption{ F-Score with Naive Bayes per category (test set) }
     \label{tab:1}
   \end{table*}
-  ------------------------------------------
+ 
   
-  \begin{table*}[t]
-  \small
-    \centering
-  \begin{tabular}{|l|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}|p{1 cm}}
-  \hline
-  \begin{tabular}[c]{@{}l@{}}\end{tabular} & \bf Happy & \bf Sad & \bf Angry & \bf Surprise & \bf Fear & \bf Disgust & \bf Love & \bf Trust & \begin{tabular}[c]{@{}l@{}}\bf Micro\\ \bf F-Score\end{tabular} & \begin{tabular}[c]{@{}l@{}} \bf Macro\\ \bf F-Score\end{tabular} \\ \hline
-  \bf 1 & 0.49 & 0.63 & 0.81 & 0.36 & 0.61 & 0.32 & 0.71 & 0.54 & 0.9 & 0.4\\ \hline
-  \bf 2 & 0.78 & 0.84 & 0.88 & 0.81 & 0.81 & 0.87 & 0.84 & 0.83 & 0.9 & 0.4\\ \hline
-  \bf 3 & 0.88 & 0.92 & 0.93 & 0.9 & 0.9 & 0.94 & 0.91 & 0.91 & 0.9 & 0.4\\ \hline
-  \bf 4 & 0.94 & 0.96 & 0.96 & 0.95 & 0.95 & 0.96 & 0.96 & 0.96 & 0.9 & 0.4\\ \hline
-  \bf 5 & 0.97 & 0.98 & 0.98 & 0.98 & 0.98 & 0.98 & 0.98 & 0.98 & 0.9 & 0.4 \\ \hline
-  \bf 6 & & & 1 & 1 & 1 & 1 & 1 & 1 & 0.9 & 0.4\\ \hline
-  \end{tabular}
-    \caption{ Score per category }
-    \label{tab:1}
-  \end{table*}
+  
   
   
   
