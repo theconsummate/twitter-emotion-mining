@@ -36,6 +36,8 @@ gradle run -PappArgs="['-s', 'snowball', '--train', '-tf', 'data/train.csv', '-m
 gradle run -PappArgs="['-s', 'naivebayes', '--train', '-tf', 'data/train.csv', '-df', 'data/dev.csv', '-mf', 'data/naivebayes.csv']"
 ```
 
+
+### Abstract
 **Emotion Analysis:** Looking into ways people express their emotion using text
 
 Seed words for each emotion category e.g. happy, enjoy, pleased are seed words for happy. Afraid, scared, panic for fear category.
